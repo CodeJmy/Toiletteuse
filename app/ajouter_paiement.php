@@ -1,0 +1,82 @@
+<?php
+include_once('includes/db.php');
+$id_rdv_selectionne = $_GET['id_rdv'] ?? null;
+
+$rdv = $pdo->query('
+    SELECT rdv.*, chiens.nom_chien, prestations.nom AS nom_prestation
+    FROM rdv
+    JOIN chiens ON rdv.id_chien = chiens.id_chien
+    JOIN prestations ON rdv.id_prestation = prestations.id_prestation
+')->fetchAll();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $id_rdv = (int)$_POST['id_rdv'];
+    $montant = (float)$_POST['montant'];
+    $type_paiement = trim($_POST['type_paiement']);
+    $date_paiement = $_POST['date_paiement'];
+    $statut = $_POST['statut'];
+
+    if ($id_rdv && $montant > 0 && $type_paiement && $date_paiement && $statut) {
+        $stmt = $pdo->prepare('INSERT INTO paiements (id_rdv, montant, type_paiement, date_paiement, statut) VALUES (?, ?, ?, ?, ?)');
+        $stmt->execute([$id_rdv, $montant, $type_paiement, $date_paiement, $statut]);
+        header('Location: paiements.php');
+        exit;
+    }
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter Paiement</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <?php include('navbar.php'); ?>
+
+    <div class="container mt-5">
+        <h2>Ajouter un paiement</h2>
+        <form method="post">
+            <div class="form-group">
+                <label>Intervention</label>
+                <select name="id_rdv" class="form-control" required>
+                    <?php foreach ($rdv as $rdvs): ?>
+                        <option value="<?= $rdvs['id_rdv'] ?>" <?= ($rdvs['id_rdv'] == $id_rdv_selectionne) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($rdvs['nom_chien']) ?> - <?= htmlspecialchars($rdvs['nom_prestation']) ?> (<?= date('d/m/Y H:i', strtotime($rdvs['date_heure'])) ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+
+            </div>
+            <div class="form-group">
+                <label>Montant (€)</label>
+                <input type="number" step="0.01" name="montant" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Type de paiement</label>
+                <input type="text" name="type_paiement" class="form-control" placeholder="Espèces, Carte, Chèque..." required>
+            </div>
+            <div class="form-group">
+                <label>Date de paiement</label>
+                <input type="date" name="date_paiement" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Statut</label>
+                <select name="statut" class="form-control" required>
+                    <option value="réglé">Réglé</option>
+                    <option value="en attente">En attente</option>
+                    <option value="annulé">Annulé</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Ajouter</button>
+            <a href="paiements.php" class="btn btn-secondary">Annuler</a>
+        </form>
+    </div>
+</body>
+
+</html>
