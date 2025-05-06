@@ -31,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter Paiement</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -68,9 +69,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-group">
                 <label>Statut</label>
                 <select name="statut" class="form-control" required>
-                    <option value="réglé">Réglé</option>
                     <option value="en attente">En attente</option>
-                    <option value="annulé">Annulé</option>
+                    <option value="payé">Payé</option>
+                    <option value="remboursé">Remboursé</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Ajouter</button>

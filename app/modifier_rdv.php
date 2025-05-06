@@ -24,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier RDV</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -66,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label>Statut</label>
             <select name="statut" class="form-control" required>
                 <option value="prévu" <?= $rdv['statut'] == 'prévu' ? 'selected' : '' ?>>Prévu</option>
-                <option value="effectué" <?= $rdv['statut'] == 'effectué' ? 'selected' : '' ?>>Effectué</option>
+                <option value="réalisé" <?= $rdv['statut'] == 'réalisé' ? 'selected' : '' ?>>Réalisé</option>
                 <option value="annulé" <?= $rdv['statut'] == 'annulé' ? 'selected' : '' ?>>Annulé</option>
             </select>
         </div>

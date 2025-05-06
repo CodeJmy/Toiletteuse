@@ -44,6 +44,7 @@ $rdvs_today = $stmt_today->fetchAll();
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rendez-vous</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -100,7 +101,7 @@ $rdvs_today = $stmt_today->fetchAll();
 
             <select name="sort" class="form-control mr-2">
                 <option value="date_heure" <?= $sort == 'date_heure' ? 'selected' : '' ?>>Date/Heure</option>
-                <option value="Nom_chien" <?= $sort == 'nom_chien' ? 'selected' : '' ?>>Nom du chien</option>
+                <option value="nom_chien" <?= $sort == 'nom_chien' ? 'selected' : '' ?>>Nom du chien</option>
                 <option value="nom_prestation" <?= $sort == 'nom_prestation' ? 'selected' : '' ?>>Prestation</option>
             </select>
 
