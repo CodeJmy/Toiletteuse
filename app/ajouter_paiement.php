@@ -8,7 +8,10 @@ $rdv = $pdo->query('
     FROM rdv
     JOIN animal ON rdv.id_animal = animal.id_animal
     JOIN prestations ON rdv.id_prestation = prestations.id_prestation
+    WHERE rdv.id_rdv NOT IN (SELECT id_rdv FROM paiements)
 ')->fetchAll();
+
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_rdv = (int)$_POST['id_rdv'];

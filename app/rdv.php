@@ -24,6 +24,24 @@ $stmt->execute([
 ]);
 $rdvs = $stmt->fetchAll();
 
+$rdvs_avenir = [];
+$rdvs_realises = [];
+$now = date('Y-m-d H:i:s');
+
+foreach ($rdvs as $rdv) {
+    if (strtolower($rdv['statut']) === 'réalisé') {
+        $rdvs_realises[] = $rdv;
+    } elseif ($rdv['date_heure'] >= $now) {
+        $rdvs_avenir[] = $rdv;
+    } else {
+        $rdvs_realises[] = $rdv;
+    }
+}
+
+$filtre = $_GET['filtre'] ?? 'tous';
+
+
+
 // Récupérer les rendez-vous du jour
 $sql_today = "
     SELECT rdv.*, animal.nom_animal, prestations.nom AS nom_prestation
@@ -51,6 +69,11 @@ $rdvs_today = $stmt_today->fetchAll();
 
 <body>
     <?php include('navbar.php'); ?>
+    <div class="d-flex justify-content-center">
+        <a href="rdv.php?filtre=tous" class="btn btn-outline-primary <?= $filtre === 'tous' ? 'active' : '' ?>">Tous</a>
+        <a href="rdv.php?filtre=avenir" class="btn btn-outline-success <?= $filtre === 'avenir' ? 'active' : '' ?>">À venir</a>
+        <a href="rdv.php?filtre=realises" class="btn btn-outline-secondary <?= $filtre === 'realises' ? 'active' : '' ?>">Réalisés</a>
+    </div>
 
     <div class="container mt-5">
         <h2>Liste des rendez-vous</h2>
@@ -110,45 +133,95 @@ $rdvs_today = $stmt_today->fetchAll();
         </form>
         <a href="ajouter_rdv.php" class="btn btn-success mb-3">Ajouter un rendez-vous</a>
 
-        <h4 class="mt-5 text-primary">📅 Tout les rendez-vous</h4>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Animal</th>
-                    <th>Prestation</th>
-                    <th>Date & Heure</th>
-                    <th>Remarque</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (count($rdvs) > 0): ?>
-                    <?php foreach ($rdvs as $rdv): ?>
+        <?php if ($filtre === 'tous' || $filtre === 'avenir'): ?>
+            <h3 class="mt-4 text-success">📅 Rendez-vous à venir</h3>
+            <?php
+            function afficherStatutStylise($statut)
+            {
+                switch ($statut) {
+                    case 'Prévu':
+                        return '<span class="badge badge-warning"><i class="fas fa-hourglass-half"></i> En attente</span>';
+                    case 'Réalisé':
+                        return '<span class="badge badge-success"><i class="fas fa-check-double"></i> Réalisé</span>';
+                    case 'Annulé':
+                        return '<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Annulé</span>';
+                    default:
+                        return '<span class="badge badge-secondary"><i class="fas fa-question-circle"></i> ' . htmlspecialchars($statut) . '</span>';
+                }
+            }
+            ?>
+
+            <?php if (count($rdvs_avenir) > 0): ?>
+                <table class="table table-bordered">
+                    <thead>
                         <tr>
-                            <td>
-                                <a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>">
-                                    <?= htmlspecialchars($rdv['nom_animal']) ?>
-                                </a>
-                            </td>
-                            <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
-                            <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($rdv['date_heure']))) ?></td>
-                            <td><?= htmlspecialchars($rdv['remarque']) ?></td>
-                            <td><?= htmlspecialchars($rdv['statut']) ?></td>
-                            <td>
-                                <a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-info btn-sm">Voir</a>
-                                <a href="modifier_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning btn-sm">Modifier</a>
-                                <a href="supprimer_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce RDV ?');">Supprimer</a>
-                            </td>
+                            <th>Animal</th>
+                            <th>Prestation</th>
+                            <th>Date & Heure</th>
+                            <th>Remarque</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
                         </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="6" class="text-center">Aucun rendez-vous trouvé.</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($rdvs_avenir as $rdv): ?>
+                            <tr>
+                                <td><a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>"><?= htmlspecialchars($rdv['nom_animal']) ?></a></td>
+                                <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
+                                <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($rdv['date_heure']))) ?></td>
+                                <td><?= htmlspecialchars($rdv['remarque']) ?></td>
+                                <td><?= htmlspecialchars($rdv['statut']) ?></td>
+                                <td>
+                                    <a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-info btn-sm">Voir</a>
+                                    <a href="modifier_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning btn-sm">Modifier</a>
+                                    <a href="supprimer_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce RDV ?');">Supprimer</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p class="text-muted">Aucun rendez-vous à venir.</p>
+            <?php endif; ?>
+        <?php endif; ?>
+
+
+        <?php if ($filtre === 'tous' || $filtre === 'realises'): ?>
+            <h3 class="mt-5 text-secondary">✅ Rendez-vous réalisés</h3>
+            <?php if (count($rdvs_realises) > 0): ?>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Animal</th>
+                            <th>Prestation</th>
+                            <th>Date & Heure</th>
+                            <th>Remarque</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($rdvs_realises as $rdv): ?>
+                            <tr class="text-muted">
+                                <td><a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>"><?= htmlspecialchars($rdv['nom_animal']) ?></a></td>
+                                <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
+                                <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($rdv['date_heure']))) ?></td>
+                                <td><?= htmlspecialchars($rdv['remarque']) ?></td>
+                                <td><?= htmlspecialchars($rdv['statut']) ?></td>
+                                <td>
+                                    <a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-info btn-sm">Voir</a>
+                                    <a href="modifier_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning btn-sm">Modifier</a>
+                                    <a href="supprimer_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce RDV ?');">Supprimer</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p class="text-muted">Aucun rendez-vous réalisé.</p>
+            <?php endif; ?>
+        <?php endif; ?>
+
         <a href="dashboard.php" class="btn btn-secondary">Retour au Dashboard</a>
     </div>
 </body>
