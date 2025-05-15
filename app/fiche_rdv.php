@@ -8,9 +8,9 @@ if (!$id) {
 
 // Récupère les infos du RDV
 $sql = "
-    SELECT rdv.*, chiens.nom_chien, prestations.nom AS nom_prestation, prestations.tarif
+    SELECT rdv.*, animal.nom_animal, prestations.nom AS nom_prestation, prestations.tarif
     FROM rdv
-    JOIN chiens ON rdv.id_chien = chiens.id_chien
+    JOIN animal ON rdv.id_animal = animal.id_animal
     JOIN prestations ON rdv.id_prestation = prestations.id_prestation
     WHERE id_rdv = :id
 ";
@@ -54,7 +54,7 @@ if ($id_rdv) {
         <h2>Détail du rendez-vous</h2>
 
         <ul class="list-group mb-4">
-            <li class="list-group-item"><strong>Chien :</strong> <?= htmlspecialchars($rdv['nom_chien']) ?></li>
+            <li class="list-group-item"><strong>Animal :</strong> <?= htmlspecialchars($rdv['nom_animal']) ?></li>
             <li class="list-group-item"><strong>Prestation :</strong> <?= htmlspecialchars($rdv['nom_prestation']) ?></li>
             <li class="list-group-item"><strong>Tarif :</strong> <?= number_format($rdv['tarif'], 2, ',', ' ') ?> €</li>
             <li class="list-group-item"><strong>Date :</strong> <?= date('d/m/Y H:i', strtotime($rdv['date_heure'])) ?></li>

@@ -1,6 +1,22 @@
 <?php
 include_once('includes/db.php');
 $search = $_GET['search'] ?? '';
+$sort = $_GET['sort'] ?? 'date_desc';
+
+switch ($sort) {
+    case 'date_asc':
+        $orderBy = 'r.date_heure ASC';
+        break;
+    case 'animal_asc':
+        $orderBy = 'ch.nom_animal ASC';
+        break;
+    case 'animal_desc':
+        $orderBy = 'ch.nom_animal DESC';
+        break;
+    default:
+        $orderBy = 'r.date_heure DESC';
+        break;
+}
 
 $query = "
     SELECT 
@@ -11,7 +27,7 @@ $query = "
         p.statut,
         c.nom AS nom_client,
         c.prenom AS prenom_client,
-        ch.nom_chien,
+        ch.nom_animal,
         pr.nom AS nom_prestation,
         r.date_heure AS date_intervention,
         r.statut AS statut_rdv
@@ -20,7 +36,7 @@ $query = "
     JOIN 
         rdv r ON p.id_rdv = r.id_rdv
     JOIN 
-        chiens ch ON r.id_chien = ch.id_chien
+        animal ch ON r.id_animal = ch.id_animal
     JOIN 
         clients c ON ch.id_client = c.id_client
     JOIN 
@@ -30,12 +46,13 @@ $query = "
         AND (
             c.nom LIKE :search 
             OR c.prenom LIKE :search 
-            OR ch.nom_chien LIKE :search 
+            OR ch.nom_animal LIKE :search 
             OR pr.nom LIKE :search
         )
     ORDER BY 
-        r.date_heure DESC
+        $orderBy
 ";
+
 
 $stmt = $pdo->prepare($query);
 $stmt->execute([':search' => '%' . $search . '%']);
@@ -60,10 +77,19 @@ $paiements = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <!-- Barre de recherche -->
         <form method="get" class="form-inline mb-4">
-            <input type="text" name="search" class="form-control mr-2" placeholder="Rechercher un chien ou une prestation" value="<?= htmlspecialchars($search) ?>">
-            <button type="submit" class="btn btn-primary">Rechercher</button>
+            <input type="text" name="search" class="form-control mr-2" placeholder="Rechercher un animal, client ou prestation" value="<?= htmlspecialchars($search) ?>">
+
+            <select name="sort" class="form-control mr-2">
+                <option value="date_desc" <?= $sort == 'date_desc' ? 'selected' : '' ?>>Date (du plus récent au plus ancien)</option>
+                <option value="date_asc" <?= $sort == 'date_asc' ? 'selected' : '' ?>>Date (du plus ancien au plus récent)</option>
+                <option value="animal_asc" <?= $sort == 'animal_asc' ? 'selected' : '' ?>>Nom de l'animal (A-Z)</option>
+                <option value="animal_desc" <?= $sort == 'animal_desc' ? 'selected' : '' ?>>Nom de l'animal (Z-A)</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">Filtrer</button>
             <a href="paiements.php" class="btn btn-secondary ml-2">Réinitialiser</a>
         </form>
+
         <h2>Liste des paiements</h2>
         <a href="ajouter_paiement.php" class="btn btn-success mb-3">Ajouter un paiement</a>
 
@@ -71,7 +97,7 @@ $paiements = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <thead>
                 <tr>
                     <th>Propriétaire</th>
-                    <th>Chien</th>
+                    <th>Animal</th>
                     <th>Prestation</th>
                     <th>Date/Heure de l'intervention</th>
                     <th>Montant</th>
@@ -86,8 +112,8 @@ $paiements = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tr>
                         <!-- Affichage client -->
                         <td><?= htmlspecialchars($paiement['nom_client']) ?> <?= htmlspecialchars($paiement['prenom_client']) ?></td>
-                        <!-- Affichage nom_chien -->
-                        <td><?= htmlspecialchars($paiement['nom_chien']) ?></td>
+                        <!-- Affichage nom_animal -->
+                        <td><?= htmlspecialchars($paiement['nom_animal']) ?></td>
                         <!-- Affichage de la prestation prestation AS nom_prestation -->
                         <td><?= htmlspecialchars($paiement['nom_prestation']) ?></td>
                         <!-- Affichage de la date  -->

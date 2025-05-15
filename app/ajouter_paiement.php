@@ -1,11 +1,12 @@
 <?php
 include_once('includes/db.php');
+
 $id_rdv_selectionne = $_GET['id_rdv'] ?? null;
 
 $rdv = $pdo->query('
-    SELECT rdv.*, chiens.nom_chien, prestations.nom AS nom_prestation
+    SELECT rdv.*, animal.nom_animal, prestations.nom AS nom_prestation, prestations.tarif
     FROM rdv
-    JOIN chiens ON rdv.id_chien = chiens.id_chien
+    JOIN animal ON rdv.id_animal = animal.id_animal
     JOIN prestations ON rdv.id_prestation = prestations.id_prestation
 ')->fetchAll();
 
@@ -19,11 +20,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($id_rdv && $montant > 0 && $type_paiement && $date_paiement && $statut) {
         $stmt = $pdo->prepare('INSERT INTO paiements (id_rdv, montant, type_paiement, date_paiement, statut) VALUES (?, ?, ?, ?, ?)');
         $stmt->execute([$id_rdv, $montant, $type_paiement, $date_paiement, $statut]);
+        $updateRdv = $pdo->prepare('UPDATE rdv SET statut = "réalisé" WHERE id_rdv = ?');
+        $updateRdv->execute([$id_rdv]);
+
         header('Location: paiements.php');
         exit;
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -45,23 +48,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form method="post">
             <div class="form-group">
                 <label>Intervention</label>
-                <select name="id_rdv" class="form-control" required>
+                <select name="id_rdv" class="form-control" required id="select-rdv">
                     <?php foreach ($rdv as $rdvs): ?>
-                        <option value="<?= $rdvs['id_rdv'] ?>" <?= ($rdvs['id_rdv'] == $id_rdv_selectionne) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($rdvs['nom_chien']) ?> - <?= htmlspecialchars($rdvs['nom_prestation']) ?> (<?= date('d/m/Y H:i', strtotime($rdvs['date_heure'])) ?>)
+                        <option
+                            value="<?= $rdvs['id_rdv'] ?>"
+                            data-tarif="<?= $rdvs['tarif'] ?>"
+                            <?= ($rdvs['id_rdv'] == $id_rdv_selectionne) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($rdvs['nom_animal']) ?> - <?= htmlspecialchars($rdvs['nom_prestation']) ?> (<?= date('d/m/Y H:i', strtotime($rdvs['date_heure'])) ?>)
                         </option>
                     <?php endforeach; ?>
                 </select>
 
+
             </div>
             <div class="form-group">
                 <label>Montant (€)</label>
-                <input type="number" step="0.01" name="montant" class="form-control" required>
+                <input type="number" step="0.01" name="montant" id="input-montant" class="form-control" required>
             </div>
             <div class="form-group">
                 <label>Type de paiement</label>
-                <input type="text" name="type_paiement" class="form-control" placeholder="Espèces, Carte, Chèque..." required>
+                <select name="type_paiement" class="form-control" required>
+                    <option value="">-- Sélectionnez --</option>
+                    <option value="Espèce" <?= isset($_POST['type_paiement']) && $_POST['type_paiement'] == 'Espèce' ? 'selected' : '' ?>>Espèces</option>
+                    <option value="Carte" <?= isset($_POST['type_paiement']) && $_POST['type_paiement'] == 'Carte' ? 'selected' : '' ?>>Cartes</option>
+                </select>
+
             </div>
+
+
             <div class="form-group">
                 <label>Date de paiement</label>
                 <input type="date" name="date_paiement" class="form-control" required>
@@ -70,14 +84,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label>Statut</label>
                 <select name="statut" class="form-control" required>
                     <option value="en attente">En attente</option>
-                    <option value="payé">Payé</option>
+                    <option value="payé" selected>Payé</option>
                     <option value="remboursé">Remboursé</option>
                 </select>
+
             </div>
             <button type="submit" class="btn btn-primary">Ajouter</button>
             <a href="paiements.php" class="btn btn-secondary">Annuler</a>
         </form>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const selectRdv = document.getElementById("select-rdv");
+            const inputMontant = document.getElementById("input-montant");
+
+            function updateMontant() {
+                const selectedOption = selectRdv.options[selectRdv.selectedIndex];
+                const tarif = selectedOption.getAttribute("data-tarif");
+                if (tarif) {
+                    inputMontant.value = tarif;
+                }
+            }
+
+            selectRdv.addEventListener("change", updateMontant);
+
+            updateMontant();
+        });
+    </script>
+
 </body>
 
 </html>

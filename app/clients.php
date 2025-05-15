@@ -69,8 +69,16 @@ $clients = $stmt->fetchAll();
                 <?php if (count($clients) > 0): ?>
                     <?php foreach ($clients as $client): ?>
                         <tr>
-                            <td><?= htmlspecialchars($client['nom']) ?></td>
-                            <td><?= htmlspecialchars($client['prenom']) ?></td>
+                            <td>
+                                <a href="fiche_clients.php?id=<?= $client['id_client'] ?>">
+                                    <?= htmlspecialchars($client['nom']) ?>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="fiche_clients.php?id=<?= $client['id_client'] ?>">
+                                    <?= htmlspecialchars($client['prenom']) ?>
+                                </a>
+                            </td>
                             <td><?= htmlspecialchars($client['telephone']) ?></td>
                             <td><?= htmlspecialchars($client['email']) ?></td>
                             <td>

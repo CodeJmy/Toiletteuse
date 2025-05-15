@@ -10,7 +10,7 @@ include_once('includes/db.php');
 
 // Comptages
 $nb_clients = $pdo->query('SELECT COUNT(*) FROM clients')->fetchColumn();
-$nb_chiens = $pdo->query('SELECT COUNT(*) FROM chiens')->fetchColumn();
+$nb_animals = $pdo->query('SELECT COUNT(*) FROM animal')->fetchColumn();
 $nb_rdv_today = $pdo->query("SELECT COUNT(*) FROM rdv WHERE DATE(date_heure) = CURDATE() AND statut = 'prévu'")->fetchColumn();
 $total_paiements = $pdo->query("SELECT SUM(montant) FROM paiements WHERE statut = 'payé' AND MONTH(date_paiement) = MONTH(CURDATE())")->fetchColumn();
 $total = $pdo->query("SELECT SUM(montant) FROM paiements WHERE statut = 'payé'")->fetchColumn();
@@ -81,12 +81,12 @@ while ($row = $requete->fetch()) {
             </div>
 
             <div class="col-md-3">
-                <a href="chiens.php" style="text-decoration: none;">
+                <a href="animal.php" style="text-decoration: none;">
                     <div class="card text-white bg-success mb-3">
-                        <div class="card-header">Chiens</div>
+                        <div class="card-header">Animaux</div>
                         <div class="card-body">
-                            <h5 class="card-title"><?= $nb_chiens ?></h5>
-                            <p class="card-text">Chiens suivis</p>
+                            <h5 class="card-title"><?= $nb_animals ?></h5>
+                            <p class="card-text">Animaux suivis</p>
                         </div>
                     </div>
                 </a>
@@ -125,7 +125,7 @@ while ($row = $requete->fetch()) {
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Nom du chien</th>
+                            <th>Nom de l'animal</th>
                             <th>Prestation</th>
                             <th>Date & Heure</th>
                             <th>Statut</th>
@@ -133,16 +133,16 @@ while ($row = $requete->fetch()) {
                     </thead>
                     <tbody>
                         <?php
-                        $rdvs = $pdo->query("SELECT chiens.nom_chien, prestations.nom AS prestation, rdv.date_heure, rdv.statut
+                        $rdvs = $pdo->query("SELECT animal.nom_animal, prestations.nom AS prestation, rdv.date_heure, rdv.statut
                                      FROM rdv 
-                                     JOIN chiens ON rdv.id_chien = chiens.id_chien
+                                     JOIN animal ON rdv.id_animal = animal.id_animal
                                      JOIN prestations ON rdv.id_prestation = prestations.id_prestation
                                      WHERE DATE(rdv.date_heure) >= CURDATE()
                                      ORDER BY rdv.date_heure ASC
                                      LIMIT 5");
                         foreach ($rdvs as $rdv) {
                             echo "<tr>
-                            <td>{$rdv['nom_chien']}</td>
+                            <td>{$rdv['nom_animal']}</td>
                             <td>{$rdv['prestation']}</td>
                             <td>" . date('d/m/Y H:i', strtotime($rdv['date_heure'])) . "</td>
                             <td>{$rdv['statut']}</td>

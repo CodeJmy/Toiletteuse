@@ -1,12 +1,12 @@
 <?php
 include_once('includes/db.php');
-$chiens = $pdo->query('SELECT * FROM chiens')->fetchAll();
+$animals = $pdo->query('SELECT * FROM animal')->fetchAll();
 $prestations = $pdo->query('SELECT * FROM prestations')->fetchAll();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $stmt = $pdo->prepare('INSERT INTO rdv (id_chien, id_prestation, date_heure, remarque, statut) VALUES (?, ?, ?, ?, ?)');
+    $stmt = $pdo->prepare('INSERT INTO rdv (id_animal, id_prestation, date_heure, remarque, statut) VALUES (?, ?, ?, ?, ?)');
     $stmt->execute([
-        $_POST['id_chien'],
+        $_POST['id_animal'],
         $_POST['id_prestation'],
         $_POST['date_heure'],
         $_POST['remarque'],
@@ -33,10 +33,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h2>Ajouter un rendez-vous</h2>
     <form method="post">
         <div class="form-group">
-            <label>Chien</label>
-            <select name="id_chien" class="form-control" required>
-                <?php foreach ($chiens as $chien): ?>
-                    <option value="<?= $chien['id_chien'] ?>"><?= htmlspecialchars($chien['nom_chien']) ?></option>
+            <label>Animal</label>
+            <select name="id_animal" class="form-control" required>
+                <?php foreach ($animals as $animal): ?>
+                    <option value="<?= $animal['id_animal'] ?>"><?= htmlspecialchars($animal['nom_animal']) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>

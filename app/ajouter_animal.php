@@ -3,17 +3,18 @@ include_once('includes/db.php');
 $clients = $pdo->query('SELECT * FROM clients')->fetchAll();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $stmt = $pdo->prepare('INSERT INTO chiens (id_client, Nom_chien, Race, Date_de_naissance, poids, taille, remarques) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $stmt = $pdo->prepare('INSERT INTO animal (id_client, nom_animal,type, race, date_de_naissance, poids, taille, remarques) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
     $stmt->execute([
         $_POST['id_client'],
-        $_POST['Nom_chien'],
-        $_POST['Race'],
-        $_POST['Date_de_naissance'],
+        $_POST['nom_animal'],
+        $_POST['type'],
+        $_POST['race'],
+        $_POST['date_de_naissance'],
         $_POST['poids'],
         $_POST['taille'],
         $_POST['remarques']
     ]);
-    header('Location: chiens.php');
+    header('Location: animal.php');
     exit;
 }
 ?>
@@ -24,15 +25,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter Chien</title>
+    <title>Ajouter Animal</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
     <?php include('navbar.php'); ?>
     <div class="container mt-5">
-        <h2>Ajouter un chien</h2>
-        <form method="post">
+        <h2>Ajouter un Animal</h2>
+        <form method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label>Propriétaire</label>
                 <select name="id_client" class="form-control" required>
@@ -42,16 +43,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </select>
             </div>
             <div class="form-group">
-                <label>Nom du chien</label>
-                <input type="text" name="Nom_chien" class="form-control" required>
+                <label>Nom de l'animal</label>
+                <input type="text" name="nom_animal" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <input type="text" name="type" class="form-control">
             </div>
             <div class="form-group">
                 <label>Race</label>
-                <input type="text" name="Race" class="form-control">
+                <input type="text" name="race" class="form-control">
             </div>
             <div class="form-group">
                 <label>Date de naissance</label>
-                <input type="date" name="Date_de_naissance" class="form-control">
+                <input type="date" name="date_de_naissance" class="form-control">
             </div>
             <div class="form-group">
                 <label>Poids (kg)</label>
@@ -66,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <textarea name="remarques" class="form-control"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Ajouter</button>
-            <a href="chiens.php" class="btn btn-secondary">Annuler</a>
+            <a href="animal.php" class="btn btn-secondary">Annuler</a>
         </form>
     </div>
 </body>

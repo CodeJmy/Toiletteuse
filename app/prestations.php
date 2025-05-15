@@ -45,7 +45,6 @@ $prestations = $pdo->query("SELECT * FROM prestations ORDER BY nom")->fetchAll()
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nom</th>
                     <th>Tarif (€)</th>
                     <th>Actions</th>
@@ -54,7 +53,6 @@ $prestations = $pdo->query("SELECT * FROM prestations ORDER BY nom")->fetchAll()
             <tbody>
                 <?php foreach ($prestations as $prestation): ?>
                     <tr>
-                        <td><?= $prestation['id_prestation'] ?></td>
                         <td><?= htmlspecialchars($prestation['nom']) ?></td>
                         <td><?= number_format($prestation['tarif'], 2, ',', ' ') ?></td>
                         <td>

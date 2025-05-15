@@ -80,10 +80,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-group">
                 <label>Type de paiement</label>
                 <select name="type_paiement" class="form-control" required>
-                    <option value="Espèces" <?= $paiement['type_paiement'] == 'Espèces' ? 'selected' : '' ?>>Espèces</option>
-                    <option value="Carte bancaire" <?= $paiement['type_paiement'] == 'Carte bancaire' ? 'selected' : '' ?>>Carte bancaire</option>
-                    <option value="Chèque" <?= $paiement['type_paiement'] == 'Chèque' ? 'selected' : '' ?>>Chèque</option>
-                    <option value="Virement" <?= $paiement['type_paiement'] == 'Virement' ? 'selected' : '' ?>>Virement</option>
+                    <option value="Espèce" <?= $paiement['type_paiement'] == 'Espèce' ? 'selected' : '' ?>>Espèces</option>
+                    <option value="Carte" <?= $paiement['type_paiement'] == 'Carte' ? 'selected' : '' ?>>Carte</option>
                 </select>
             </div>
             <div class="form-group">

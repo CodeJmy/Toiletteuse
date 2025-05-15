@@ -7,7 +7,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item"><a class="nav-link" href="clients.php">Clients</a></li>
-            <li class="nav-item"><a class="nav-link" href="chiens.php">Chiens</a></li>
+            <li class="nav-item"><a class="nav-link" href="animal.php">Animaux</a></li>
             <li class="nav-item"><a class="nav-link" href="rdv.php">Rendez-vous</a></li>
             <li class="nav-item"><a class="nav-link" href="paiements.php">Paiements</a></li>
             <li class="nav-item"><a class="nav-link" href="prestations.php">Prestations</a></li>

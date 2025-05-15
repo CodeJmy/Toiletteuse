@@ -3,18 +3,18 @@ include_once('includes/db.php');
 $search = $_GET['search'] ?? '';
 $sort = $_GET['sort'] ?? 'date_heure';
 
-$allowedSort = ['date_heure', 'Nom_chien', 'nom_prestation'];
+$allowedSort = ['date_heure', 'nom_animal', 'nom_prestation'];
 
 if (!in_array($sort, $allowedSort)) {
     $sort = 'date_heure';
 }
 
 $sql = "
-    SELECT rdv.*, chiens.nom_chien, prestations.nom AS nom_prestation
+    SELECT rdv.*, animal.nom_animal, prestations.nom AS nom_prestation
     FROM rdv
-    JOIN chiens ON rdv.id_chien = chiens.id_chien
+    JOIN animal ON rdv.id_animal = animal.id_animal
     JOIN prestations ON rdv.id_prestation = prestations.id_prestation
-    WHERE chiens.nom_chien LIKE :search OR prestations.nom LIKE :search
+    WHERE animal.nom_animal LIKE :search OR prestations.nom LIKE :search
     ORDER BY $sort ASC
 ";
 
@@ -26,9 +26,9 @@ $rdvs = $stmt->fetchAll();
 
 // Récupérer les rendez-vous du jour
 $sql_today = "
-    SELECT rdv.*, chiens.nom_chien, prestations.nom AS nom_prestation
+    SELECT rdv.*, animal.nom_animal, prestations.nom AS nom_prestation
     FROM rdv
-    JOIN chiens ON rdv.id_chien = chiens.id_chien
+    JOIN animal ON rdv.id_animal = animal.id_animal
     JOIN prestations ON rdv.id_prestation = prestations.id_prestation
     WHERE DATE(rdv.date_heure) = CURDATE()
     ORDER BY rdv.date_heure ASC
@@ -61,7 +61,7 @@ $rdvs_today = $stmt_today->fetchAll();
             <table class="table table-bordered table-striped mt-3">
                 <thead>
                     <tr>
-                        <th>Chien</th>
+                        <th>Animal</th>
                         <th>Prestation</th>
                         <th>Heure</th>
                         <th>Remarque</th>
@@ -74,7 +74,7 @@ $rdvs_today = $stmt_today->fetchAll();
                         <tr>
                             <td>
                                 <a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>">
-                                    <?= htmlspecialchars($rdv['nom_chien']) ?>
+                                    <?= htmlspecialchars($rdv['nom_animal']) ?>
                                 </a>
                             </td>
                             <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
@@ -101,7 +101,7 @@ $rdvs_today = $stmt_today->fetchAll();
 
             <select name="sort" class="form-control mr-2">
                 <option value="date_heure" <?= $sort == 'date_heure' ? 'selected' : '' ?>>Date/Heure</option>
-                <option value="nom_chien" <?= $sort == 'nom_chien' ? 'selected' : '' ?>>Nom du chien</option>
+                <option value="nom_animal" <?= $sort == 'nom_animal' ? 'selected' : '' ?>>Nom de l'animal</option>
                 <option value="nom_prestation" <?= $sort == 'nom_prestation' ? 'selected' : '' ?>>Prestation</option>
             </select>
 
@@ -110,10 +110,11 @@ $rdvs_today = $stmt_today->fetchAll();
         </form>
         <a href="ajouter_rdv.php" class="btn btn-success mb-3">Ajouter un rendez-vous</a>
 
+        <h4 class="mt-5 text-primary">📅 Tout les rendez-vous</h4>
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Chien</th>
+                    <th>Animal</th>
                     <th>Prestation</th>
                     <th>Date & Heure</th>
                     <th>Remarque</th>
@@ -127,7 +128,7 @@ $rdvs_today = $stmt_today->fetchAll();
                         <tr>
                             <td>
                                 <a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>">
-                                    <?= htmlspecialchars($rdv['nom_chien']) ?>
+                                    <?= htmlspecialchars($rdv['nom_animal']) ?>
                                 </a>
                             </td>
                             <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
