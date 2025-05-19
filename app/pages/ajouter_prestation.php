@@ -1,18 +1,24 @@
 <?php
 include_once('includes/db.php');
+include_once('includes/auth.php');
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nom = trim($_POST['nom']);
-    $tarif = filter_input(INPUT_POST, 'tarif', FILTER_VALIDATE_FLOAT);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !checkToken($_POST['csrf_token'])) {
+        die("Token CSRF invalide ou expiré.");
+    }
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $nom = trim($_POST['nom']);
+        $tarif = filter_input(INPUT_POST, 'tarif', FILTER_VALIDATE_FLOAT);
 
-    if (empty($nom) || $tarif === false) {
-        $_SESSION['erreur'] = "Veuillez remplir tous les champs correctement";
-    } else {
-        $stmt = $pdo->prepare("INSERT INTO prestations (nom, tarif) VALUES (?, ?)");
-        $stmt->execute([$nom, $tarif]);
-        $_SESSION['message'] = "Prestation ajoutée avec succès";
-        header('Location: index.php?page=prestations');
-        exit;
+        if (empty($nom) || $tarif === false) {
+            $_SESSION['erreur'] = "Veuillez remplir tous les champs correctement";
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO prestations (nom, tarif) VALUES (?, ?)");
+            $stmt->execute([$nom, $tarif]);
+            $_SESSION['message'] = "Prestation ajoutée avec succès";
+            header('Location: index.php?page=prestations');
+            exit;
+        }
     }
 }
 ?>
@@ -40,6 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php endif; ?>
 
         <form method="post">
+            <input type="hidden" name="csrf_token" value="<?= generateToken() ?>">
             <div class="form-group">
                 <label>Nom de la prestation</label>
                 <input type="text" name="nom" class="form-control" required>

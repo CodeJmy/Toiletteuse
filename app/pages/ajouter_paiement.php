@@ -1,5 +1,6 @@
 <?php
 include_once('includes/db.php');
+include_once('includes/auth.php');
 
 $id_rdv_selectionne = $_GET['id_rdv'] ?? null;
 
@@ -12,22 +13,26 @@ $rdv = $pdo->query('
 ')->fetchAll();
 
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !checkToken($_POST['csrf_token'])) {
+        die("Token CSRF invalide ou expiré.");
+    }
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $id_rdv = (int)$_POST['id_rdv'];
+        $montant = (float)$_POST['montant'];
+        $type_paiement = trim($_POST['type_paiement']);
+        $date_paiement = $_POST['date_paiement'];
+        $statut = $_POST['statut'];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id_rdv = (int)$_POST['id_rdv'];
-    $montant = (float)$_POST['montant'];
-    $type_paiement = trim($_POST['type_paiement']);
-    $date_paiement = $_POST['date_paiement'];
-    $statut = $_POST['statut'];
+        if ($id_rdv && $montant > 0 && $type_paiement && $date_paiement && $statut) {
+            $stmt = $pdo->prepare('INSERT INTO paiements (id_rdv, montant, type_paiement, date_paiement, statut) VALUES (?, ?, ?, ?, ?)');
+            $stmt->execute([$id_rdv, $montant, $type_paiement, $date_paiement, $statut]);
+            $updateRdv = $pdo->prepare('UPDATE rdv SET statut = "réalisé" WHERE id_rdv = ?');
+            $updateRdv->execute([$id_rdv]);
 
-    if ($id_rdv && $montant > 0 && $type_paiement && $date_paiement && $statut) {
-        $stmt = $pdo->prepare('INSERT INTO paiements (id_rdv, montant, type_paiement, date_paiement, statut) VALUES (?, ?, ?, ?, ?)');
-        $stmt->execute([$id_rdv, $montant, $type_paiement, $date_paiement, $statut]);
-        $updateRdv = $pdo->prepare('UPDATE rdv SET statut = "réalisé" WHERE id_rdv = ?');
-        $updateRdv->execute([$id_rdv]);
-
-        header('Location: index.php?page=paiements');
-        exit;
+            header('Location: index.php?page=paiements');
+            exit;
+        }
     }
 }
 ?>
@@ -49,6 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="container mt-5">
         <h2>Ajouter un paiement</h2>
         <form method="post">
+            <input type="hidden" name="csrf_token" value="<?= generateToken() ?>">
             <div class="form-group">
                 <label>Intervention</label>
                 <select name="id_rdv" class="form-control" required id="select-rdv">

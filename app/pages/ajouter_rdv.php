@@ -1,19 +1,25 @@
 <?php
 include_once('includes/db.php');
+include_once('includes/auth.php');
 $animals = $pdo->query('SELECT * FROM animal')->fetchAll();
 $prestations = $pdo->query('SELECT * FROM prestations')->fetchAll();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $stmt = $pdo->prepare('INSERT INTO rdv (id_animal, id_prestation, date_heure, remarque, statut) VALUES (?, ?, ?, ?, ?)');
-    $stmt->execute([
-        $_POST['id_animal'],
-        $_POST['id_prestation'],
-        $_POST['date_heure'],
-        $_POST['remarque'],
-        $_POST['statut']
-    ]);
-    header('Location: index.php?page=rdv');
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !checkToken($_POST['csrf_token'])) {
+        die("Token CSRF invalide ou expiré.");
+    }
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $stmt = $pdo->prepare('INSERT INTO rdv (id_animal, id_prestation, date_heure, remarque, statut) VALUES (?, ?, ?, ?, ?)');
+        $stmt->execute([
+            $_POST['id_animal'],
+            $_POST['id_prestation'],
+            $_POST['date_heure'],
+            $_POST['remarque'],
+            $_POST['statut']
+        ]);
+        header('Location: index.php?page=rdv');
+        exit;
+    }
 }
 ?>
 
@@ -34,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="container mt-5">
         <h2>Ajouter un rendez-vous</h2>
         <form method="post">
+            <input type="hidden" name="csrf_token" value="<?= generateToken() ?>">
             <div class="form-group">
                 <label>Animal</label>
                 <select name="id_animal" class="form-control" required>

@@ -1,23 +1,26 @@
 <?php
 include_once('includes/db.php');
+include_once('includes/auth.php');
 
-if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
-    die('Erreur de sécurité : token CSRF invalide.');
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !checkToken($_POST['csrf_token'])) {
+        die("Token CSRF invalide ou expiré.");
+    }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $stmt = $pdo->prepare('INSERT INTO clients (nom, prenom, telephone, email, adresse, code_postal, ville, date_creation_client) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())');
-    $stmt->execute([
-        $_POST['nom'],
-        $_POST['prenom'],
-        $_POST['telephone'],
-        $_POST['email'],
-        $_POST['adresse'],
-        $_POST['code_postal'],
-        $_POST['ville'],
-    ]);
-    header('Location: index.php?page=clients');
-    exit;
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $stmt = $pdo->prepare('INSERT INTO clients (nom, prenom, telephone, email, adresse, code_postal, ville, date_creation_client) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())');
+        $stmt->execute([
+            $_POST['nom'],
+            $_POST['prenom'],
+            $_POST['telephone'],
+            $_POST['email'],
+            $_POST['adresse'],
+            $_POST['code_postal'],
+            $_POST['ville'],
+        ]);
+        header('Location: index.php?page=clients');
+        exit;
+    }
 }
 ?>
 
@@ -37,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="container mt-5">
         <h2>Ajouter un client</h2>
         <form method="post">
+            <input type="hidden" name="csrf_token" value="<?= generateToken() ?>">
             <div class="form-group">
                 <label>Nom</label>
                 <input type="text" name="nom" class="form-control" required>

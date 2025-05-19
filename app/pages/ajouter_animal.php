@@ -1,21 +1,27 @@
 <?php
 include_once('includes/db.php');
+include_once('includes/auth.php');
 $clients = $pdo->query('SELECT * FROM clients')->fetchAll();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $stmt = $pdo->prepare('INSERT INTO animal (id_client, nom_animal,type, race, date_de_naissance, poids, taille, remarques) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-    $stmt->execute([
-        $_POST['id_client'],
-        $_POST['nom_animal'],
-        $_POST['type'],
-        $_POST['race'],
-        $_POST['date_de_naissance'],
-        $_POST['poids'],
-        $_POST['taille'],
-        $_POST['remarques']
-    ]);
-    header('Location: index.php?page=animal');
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !checkToken($_POST['csrf_token'])) {
+        die("Token CSRF invalide ou expiré.");
+    }
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $stmt = $pdo->prepare('INSERT INTO animal (id_client, nom_animal,type, race, date_de_naissance, poids, taille, remarques) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->execute([
+            $_POST['id_client'],
+            $_POST['nom_animal'],
+            $_POST['type'],
+            $_POST['race'],
+            $_POST['date_de_naissance'],
+            $_POST['poids'],
+            $_POST['taille'],
+            $_POST['remarques']
+        ]);
+        header('Location: index.php?page=animal');
+        exit;
+    }
 }
 ?>
 
@@ -34,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="container mt-5">
         <h2>Ajouter un Animal</h2>
         <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= generateToken() ?>">
             <div class="form-group">
                 <label>Propriétaire</label>
                 <select name="id_client" class="form-control" required>

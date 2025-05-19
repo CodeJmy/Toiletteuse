@@ -1,5 +1,6 @@
 <?php
 include_once('includes/db.php');
+include_once('includes/auth.php');
 
 // Vérification et sécurisation de l'ID
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -24,26 +25,31 @@ $stmt->execute();
 $rdvs = $stmt->fetchAll();
 
 // Traitement du formulaire
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    try {
-        $stmt = $pdo->prepare('
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !checkToken($_POST['csrf_token'])) {
+        die("Token CSRF invalide ou expiré.");
+    }
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        try {
+            $stmt = $pdo->prepare('
             UPDATE paiements 
             SET montant=?, type_paiement=?, date_paiement=?, statut=? 
             WHERE id_paiement=?
         ');
-        $stmt->execute([
-            filter_input(INPUT_POST, 'montant', FILTER_VALIDATE_FLOAT),
-            htmlspecialchars($_POST['type_paiement']),
-            $_POST['date_paiement'],
-            $_POST['statut'],
-            $id
-        ]);
+            $stmt->execute([
+                filter_input(INPUT_POST, 'montant', FILTER_VALIDATE_FLOAT),
+                htmlspecialchars($_POST['type_paiement']),
+                $_POST['date_paiement'],
+                $_POST['statut'],
+                $id
+            ]);
 
-        $_SESSION['success'] = "Paiement mis à jour avec succès";
-        header('Location: index.php?page=paiements');
-        exit;
-    } catch (PDOException $e) {
-        $_SESSION['error'] = "Erreur lors de la mise à jour: " . $e->getMessage();
+            $_SESSION['success'] = "Paiement mis à jour avec succès";
+            header('Location: index.php?page=paiements');
+            exit;
+        } catch (PDOException $e) {
+            $_SESSION['error'] = "Erreur lors de la mise à jour: " . $e->getMessage();
+        }
     }
 }
 ?>
@@ -71,6 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php endif; ?>
 
         <form method="post" action="index.php?page=modifier_paiement&id=<?= $id ?>">
+            <input type="hidden" name="csrf_token" value="<?= generateToken() ?>">
             <div class="form-group">
                 <label>Montant (€)</label>
                 <input type="number" step="0.01" name="montant" class="form-control"

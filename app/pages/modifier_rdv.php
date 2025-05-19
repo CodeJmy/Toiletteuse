@@ -1,5 +1,7 @@
 <?php
 include_once('includes/db.php');
+include_once('includes/auth.php');
+
 // Vérification et sécurisation de l'ID
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) {
@@ -8,79 +10,88 @@ if (!$id) {
     exit;
 }
 
-$rdv = $pdo->query('SELECT * FROM rdv WHERE id_rdv = '.$id)->fetch();
+$rdv = $pdo->query('SELECT * FROM rdv WHERE id_rdv = ' . $id)->fetch();
 $animals = $pdo->query('SELECT * FROM animal')->fetchAll();
 $prestations = $pdo->query('SELECT * FROM prestations')->fetchAll();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $stmt = $pdo->prepare('UPDATE rdv SET id_animal=?, id_prestation=?, date_heure=?, remarque=?, statut=? WHERE id_rdv=?');
-    $stmt->execute([
-        $_POST['id_animal'],
-        $_POST['id_prestation'],
-        $_POST['date_heure'],
-        $_POST['remarque'],
-        $_POST['statut'],
-        $id
-    ]);
-    header('Location: index.php?page=rdv');
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !checkToken($_POST['csrf_token'])) {
+        die("Token CSRF invalide ou expiré.");
+    }
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $stmt = $pdo->prepare('UPDATE rdv SET id_animal=?, id_prestation=?, date_heure=?, remarque=?, statut=? WHERE id_rdv=?');
+        $stmt->execute([
+            $_POST['id_animal'],
+            $_POST['id_prestation'],
+            $_POST['date_heure'],
+            $_POST['remarque'],
+            $_POST['statut'],
+            $id
+        ]);
+        header('Location: index.php?page=rdv');
+        exit;
+    }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modifier RDV</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
 
-<?php include 'includes/header.php' ?>
+    <?php include 'includes/header.php' ?>
 
-<div class="container mt-5">
-    <h2>Modifier un rendez-vous</h2>
-    <form method="post" action="index.php?page=modifier_rdv&id=<?= $id ?>">
-        <div class="form-group">
-            <label>Animaux</label>
-            <select name="id_animal" class="form-control" required>
-                <?php foreach ($animals as $animal): ?>
-                    <option value="<?= $animal['id_animal'] ?>" <?= $animal['id_animal'] == $rdv['id_animal'] ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($animal['nom_animal']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Prestation</label>
-            <select name="id_prestation" class="form-control" required>
-                <?php foreach ($prestations as $prestation): ?>
-                    <option value="<?= $prestation['id_prestation'] ?>" <?= $prestation['id_prestation'] == $rdv['id_prestation'] ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($prestation['nom']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Date et heure</label>
-            <input type="datetime-local" name="date_heure" class="form-control" value="<?= date('d-m-Y\TH:i', strtotime($rdv['date_heure'])) ?>" required>
-        </div>
-        <div class="form-group">
-            <label>Remarque</label>
-            <textarea name="remarque" class="form-control"><?= htmlspecialchars($rdv['remarque']) ?></textarea>
-        </div>
-        <div class="form-group">
-            <label>Statut</label>
-            <select name="statut" class="form-control" required>
-                <option value="prévu" <?= $rdv['statut'] == 'prévu' ? 'selected' : '' ?>>Prévu</option>
-                <option value="réalisé" <?= $rdv['statut'] == 'réalisé' ? 'selected' : '' ?>>Réalisé</option>
-                <option value="annulé" <?= $rdv['statut'] == 'annulé' ? 'selected' : '' ?>>Annulé</option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Modifier</button>
-        <a href="index.php?page=rdv" class="btn btn-secondary">Annuler</a>
-    </form>
-</div>
+    <div class="container mt-5">
+        <h2>Modifier un rendez-vous</h2>
+        <form method="post" action="index.php?page=modifier_rdv&id=<?= $id ?>">
+            <input type="hidden" name="csrf_token" value="<?= generateToken() ?>">
+            <div class="form-group">
+                <label>Animaux</label>
+                <select name="id_animal" class="form-control" required>
+                    <?php foreach ($animals as $animal): ?>
+                        <option value="<?= $animal['id_animal'] ?>" <?= $animal['id_animal'] == $rdv['id_animal'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($animal['nom_animal']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Prestation</label>
+                <select name="id_prestation" class="form-control" required>
+                    <?php foreach ($prestations as $prestation): ?>
+                        <option value="<?= $prestation['id_prestation'] ?>" <?= $prestation['id_prestation'] == $rdv['id_prestation'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($prestation['nom']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Date et heure</label>
+                <input type="datetime-local" name="date_heure" class="form-control" value="<?= date('d-m-Y\TH:i', strtotime($rdv['date_heure'])) ?>" required>
+            </div>
+            <div class="form-group">
+                <label>Remarque</label>
+                <textarea name="remarque" class="form-control"><?= htmlspecialchars($rdv['remarque']) ?></textarea>
+            </div>
+            <div class="form-group">
+                <label>Statut</label>
+                <select name="statut" class="form-control" required>
+                    <option value="prévu" <?= $rdv['statut'] == 'prévu' ? 'selected' : '' ?>>Prévu</option>
+                    <option value="réalisé" <?= $rdv['statut'] == 'réalisé' ? 'selected' : '' ?>>Réalisé</option>
+                    <option value="annulé" <?= $rdv['statut'] == 'annulé' ? 'selected' : '' ?>>Annulé</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Modifier</button>
+            <a href="index.php?page=rdv" class="btn btn-secondary">Annuler</a>
+        </form>
+    </div>
 </body>
+
 </html>

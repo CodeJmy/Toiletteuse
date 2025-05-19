@@ -1,5 +1,7 @@
 <?php
 include_once('includes/db.php');
+include_once('includes/auth.php');
+
 // Vérification et sécurisation de l'ID
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) {
@@ -10,20 +12,26 @@ if (!$id) {
 
 $client = $pdo->query("SELECT * FROM clients WHERE id_client = $id")->fetch();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $stmt = $pdo->prepare('UPDATE clients SET nom=?, prenom=?, telephone=?, email=?, adresse=?, code_postal=?, ville=? WHERE id_client=?');
-    $stmt->execute([
-        $_POST['nom'],
-        $_POST['prenom'],
-        $_POST['telephone'],
-        $_POST['email'],
-        $_POST['adresse'],
-        $_POST['code_postal'],
-        $_POST['ville'],
-        $id
-    ]);
-    header('Location: index.php?page=clients');
-    exit;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !checkToken($_POST['csrf_token'])) {
+        die("Token CSRF invalide ou expiré.");
+    }
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $stmt = $pdo->prepare('UPDATE clients SET nom=?, prenom=?, telephone=?, email=?, adresse=?, code_postal=?, ville=? WHERE id_client=?');
+        $stmt->execute([
+            $_POST['nom'],
+            $_POST['prenom'],
+            $_POST['telephone'],
+            $_POST['email'],
+            $_POST['adresse'],
+            $_POST['code_postal'],
+            $_POST['ville'],
+            $id
+        ]);
+        header('Location: index.php?page=clients');
+        exit;
+    }
 }
 ?>
 
@@ -43,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="container mt-5">
         <h2>Modifier le client</h2>
         <form method="post" action="index.php?page=modifier_client&id=<?= $id ?>">
+            <input type="hidden" name="csrf_token" value="<?= generateToken() ?>">
             <div class="form-group">
                 <label>Nom</label>
                 <input type="text" name="nom" class="form-control" value="<?= htmlspecialchars($client['nom']) ?>" required>
