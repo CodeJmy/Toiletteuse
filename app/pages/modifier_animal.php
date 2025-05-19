@@ -1,6 +1,13 @@
 <?php
 include_once('includes/db.php');
-$id = $_GET['id'];
+// Vérification et sécurisation de l'ID
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$id) {
+    $_SESSION['error'] = "ID de animal invalide";
+    header('Location: index.php?page=animal');
+    exit;
+}
+
 $animal = $pdo->query('SELECT * FROM animal WHERE id_animal = '.$id)->fetch();
 $clients = $pdo->query('SELECT * FROM clients')->fetchAll();
 
@@ -16,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_POST['remarques'],
         $id
     ]);
-    header('Location: animal.php');
+    header('Location: index.php?page=animal');
     exit;
 }
 ?>
@@ -31,11 +38,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-<?php include('navbar.php'); ?> <!-- Barre de navigation -->
+<?php include 'includes/header.php' ?>
 
 <div class="container mt-5">
     <h2>Modifier un animal</h2>
-    <form method="post">
+    <form method="post" action="index.php?page=modifier_animal&id=<?= $id ?>">
         <div class="form-group">
             <label>Propriétaire</label>
             <select name="id_client" class="form-control" required>
@@ -71,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <textarea name="remarques" class="form-control"><?= htmlspecialchars($animal['remarques']) ?></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Enregistrer</button>
-        <a href="animal.php" class="btn btn-secondary">Annuler</a>
+        <a href="index.php?page=animal" class="btn btn-secondary">Annuler</a>
     </form>
 </div>
 </body>

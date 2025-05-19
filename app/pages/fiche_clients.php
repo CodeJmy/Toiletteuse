@@ -22,7 +22,7 @@ if (!$client) {
 
 // Récupérer les animaux du client
 $sqlAnimal = "SELECT * FROM animal WHERE id_client = :id_client";
-$stmtAnimal = $pdo->prepare($sqlanimal);
+$stmtAnimal = $pdo->prepare($sqlAnimal);
 $stmtAnimal->execute(['id_client' => $id_client]);
 $animals = $stmtAnimal->fetchAll();
 
@@ -42,13 +42,14 @@ $rdvs = $stmtRdv->fetchAll();
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <title>Fiche Client</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
-    <?php include('navbar.php'); ?>
 
     <div class="container mt-5">
         <h2>Fiche du client : <?= htmlspecialchars($client['prenom']) . ' ' . htmlspecialchars($client['nom']) ?></h2>
@@ -96,7 +97,8 @@ $rdvs = $stmtRdv->fetchAll();
             <p>Aucun rendez-vous trouvé pour ce client.</p>
         <?php endif; ?>
 
-        <a href="clients.php" class="btn btn-secondary mt-3">Retour à la liste des clients</a>
+        <a href="index.php?page=clients" class="btn btn-secondary mt-3">Retour à la liste des clients</a>
     </div>
 </body>
+
 </html>

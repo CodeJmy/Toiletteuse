@@ -1,12 +1,11 @@
 <?php
-session_start();
 include_once('includes/db.php');
 
 // Vérification et sécurisation de l'ID
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) {
     $_SESSION['error'] = "ID de paiement invalide";
-    header('Location: paiements.php');
+    header('Location: index.php?page=paiements');
     exit;
 }
 
@@ -17,7 +16,7 @@ $paiement = $stmt->fetch();
 
 if (!$paiement) {
     $_SESSION['error'] = "Paiement introuvable";
-    header('Location: paiements.php');
+    header('Location: index.php?page=paiements');
     exit;
 }
 
@@ -41,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ]);
 
         $_SESSION['success'] = "Paiement mis à jour avec succès";
-        header('Location: paiements.php');
+        header('Location: index.php?page=paiements');
         exit;
     } catch (PDOException $e) {
         $_SESSION['error'] = "Erreur lors de la mise à jour: " . $e->getMessage();
@@ -61,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-    <?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
 
     <div class="container mt-5">
         <h2>Modifier un paiement</h2>
@@ -71,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php unset($_SESSION['error']); ?>
         <?php endif; ?>
 
-        <form method="post">
+        <form method="post" action="index.php?page=modifier_paiement&id=<?= $id ?>">
             <div class="form-group">
                 <label>Montant (€)</label>
                 <input type="number" step="0.01" name="montant" class="form-control"
@@ -98,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Modifier</button>
-            <a href="paiements.php" class="btn btn-secondary">Annuler</a>
+            <a href="index.php?page=paiements" class="btn btn-secondary">Annuler</a>
         </form>
     </div>
 </body>

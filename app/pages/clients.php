@@ -1,5 +1,7 @@
 <?php
 include_once('includes/db.php');
+include_once 'includes/auth.php';
+
 $search = $_GET['search'] ?? '';
 $sort = $_GET['sort'] ?? 'date_creation_client';
 
@@ -33,13 +35,14 @@ $clients = $stmt->fetchAll();
 </head>
 
 <body>
-    <?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
 
 
     <div class="container mt-5">
         <h2>Liste des clients</h2>
         <!-- Formulaire de recherche + tri -->
-        <form method="get" class="form-inline mb-4">
+        <form method="get" action="index.php" class="form-inline mb-4">
+            <input type="hidden" name="page" value="clients">
             <input type="text" name="search" class="form-control mr-2" placeholder="Rechercher" value="<?= htmlspecialchars($search) ?>">
 
             <select name="sort" class="form-control mr-2">
@@ -50,10 +53,10 @@ $clients = $stmt->fetchAll();
             </select>
 
             <button type="submit" class="btn btn-primary">Rechercher / Trier</button>
-            <a href="clients.php" class="btn btn-secondary ml-2">Réinitialiser</a>
+            <a href="index.php?page=clients" class="btn btn-secondary ml-2">Réinitialiser</a>
         </form>
 
-        <a href="ajouter_client.php" class="btn btn-success mb-3">Ajouter un client</a>
+        <a href="index.php?page=ajouter_client" class="btn btn-success mb-3">Ajouter un client</a>
 
         <table class="table table-bordered">
             <thead class="thead-light">
@@ -70,20 +73,20 @@ $clients = $stmt->fetchAll();
                     <?php foreach ($clients as $client): ?>
                         <tr>
                             <td>
-                                <a href="fiche_clients.php?id=<?= $client['id_client'] ?>">
+                                <a href="index.php?page=fiche_clients&id=<?= $client['id_client'] ?>">
                                     <?= htmlspecialchars($client['nom']) ?>
                                 </a>
                             </td>
                             <td>
-                                <a href="fiche_clients.php?id=<?= $client['id_client'] ?>">
+                                <a href="index.php?page=fiche_clients&id=<?= $client['id_client'] ?>">
                                     <?= htmlspecialchars($client['prenom']) ?>
                                 </a>
                             </td>
                             <td><?= htmlspecialchars($client['telephone']) ?></td>
                             <td><?= htmlspecialchars($client['email']) ?></td>
                             <td>
-                                <a href="modifier_client.php?id=<?= $client['id_client'] ?>" class="btn btn-warning btn-sm">Modifier</a>
-                                <a href="supprimer_client.php?id=<?= $client['id_client'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?');">Supprimer</a>
+                                <a href="index.php?page=modifier_client&id=<?= $client['id_client'] ?>" class="btn btn-warning btn-sm">Modifier</a>
+                                <a href="index.php?page=supprimer_client&id=<?= $client['id_client'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?');">Supprimer</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -95,7 +98,7 @@ $clients = $stmt->fetchAll();
             </tbody>
         </table>
 
-        <a href="dashboard.php" class="btn btn-secondary">Retour au Dashboard</a>
+        <a href="index.php?page=dashboard" class="btn btn-secondary">Retour au Dashboard</a>
     </div>
 
 </body>

@@ -1,5 +1,4 @@
 <?php
-session_start();
 include_once('includes/db.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -12,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $pdo->prepare("INSERT INTO prestations (nom, tarif) VALUES (?, ?)");
         $stmt->execute([$nom, $tarif]);
         $_SESSION['message'] = "Prestation ajoutée avec succès";
-        header('Location: prestations.php');
+        header('Location: index.php?page=prestations');
         exit;
     }
 }
@@ -30,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-    <?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
 
     <div class="container mt-5">
         <h2>Ajouter une prestation</h2>

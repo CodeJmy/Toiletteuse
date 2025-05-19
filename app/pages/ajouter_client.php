@@ -1,5 +1,10 @@
 <?php
 include_once('includes/db.php');
+
+if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    die('Erreur de sécurité : token CSRF invalide.');
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $pdo->prepare('INSERT INTO clients (nom, prenom, telephone, email, adresse, code_postal, ville, date_creation_client) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())');
     $stmt->execute([
@@ -11,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_POST['code_postal'],
         $_POST['ville'],
     ]);
-    header('Location: clients.php');
+    header('Location: index.php?page=clients');
     exit;
 }
 ?>
@@ -27,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-<?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
 
     <div class="container mt-5">
         <h2>Ajouter un client</h2>
@@ -60,8 +65,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label>Ville</label>
                 <input type="text" name="ville" class="form-control">
             </div>
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
             <button type="submit" class="btn btn-primary">Ajouter</button>
-            <a href="clients.php" class="btn btn-secondary">Annuler</a>
+            <a href="index.php?page=clients" class="btn btn-secondary">Annuler</a>
         </form>
     </div>
 </body>

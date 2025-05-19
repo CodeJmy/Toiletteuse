@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_POST['taille'],
         $_POST['remarques']
     ]);
-    header('Location: animal.php');
+    header('Location: index.php?page=animal');
     exit;
 }
 ?>
@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-    <?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
     <div class="container mt-5">
         <h2>Ajouter un Animal</h2>
         <form method="post" enctype="multipart/form-data">

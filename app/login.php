@@ -1,5 +1,8 @@
 <?php
-session_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include_once('includes/db.php');
 
 $erreur = '';
@@ -15,7 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($utilisateur && password_verify($mot_de_passe, $utilisateur['mot_de_passe'])) {
         $_SESSION['utilisateur_id'] = $utilisateur['id_utilisateur'];
         $_SESSION['nom_utilisateur'] = $utilisateur['nom_utilisateur'];
-        header('Location: dashboard.php');
+
+        // Générer un token CSRF unique
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+        header('Location: index.php?page=dashboard');
         exit;
     } else {
         $erreur = 'Nom d\'utilisateur ou mot de passe incorrect.';

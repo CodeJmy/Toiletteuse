@@ -36,24 +36,25 @@ $animals = $stmt->fetchAll();
 </head>
 
 <body>
-    <?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
 
     <div class="container mt-5">
         <h2>Liste des Animaux</h2>
         <!-- Barre de recherche -->
-        <form method="get" class="form-inline mb-4">
+        <form method="get" action="index.php" class="form-inline mb-4">
+            <input type="hidden" name="page" value="animal">
             <input type="text" name="search" class="form-control mr-2" placeholder="Rechercher" value="<?= htmlspecialchars($search) ?>">
 
             <select name="sort" class="form-control mr-2">
                 <option value="nom_animal" <?= $sort == 'nom_animal' ? 'selected' : '' ?>>Nom de l'animal</option>
-                <option value="race" <?= $sort == 'Race' ? 'selected' : '' ?>>Race</option>
+                <option value="race" <?= $sort == 'race' ? 'selected' : '' ?>>Race</option>
                 <option value="date_de_naissance" <?= $sort == 'date_de_naissance' ? 'selected' : '' ?>>Date de naissance</option>
             </select>
 
             <button type="submit" class="btn btn-primary">Rechercher / Trier</button>
-            <a href="animal.php" class="btn btn-secondary ml-2">Réinitialiser</a>
+            <a href="index.php?page=animal" class="btn btn-secondary ml-2">Réinitialiser</a>
         </form>
-        <a href="ajouter_animal.php" class="btn btn-success mb-3">Ajouter un animal</a>
+        <a href="index.php?page=ajouter_animal" class="btn btn-success mb-3">Ajouter un animal</a>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -72,7 +73,7 @@ $animals = $stmt->fetchAll();
                     <?php foreach ($animals as $animal): ?>
                         <tr>
                             <td>
-                                <a href="fiche_animal.php?id=<?= $animal['id_animal'] ?>">
+                                <a href="index.php?page=fiche_animal&id=<?= $animal['id_animal'] ?>">
                                     <?= htmlspecialchars($animal['nom_animal']) ?>
                                 </a>
                             </td>
@@ -80,16 +81,16 @@ $animals = $stmt->fetchAll();
                             <td><?= htmlspecialchars($animal['race'] ?? '') ?></td>
                             <td><?= htmlspecialchars($animal['date_de_naissance'] ?? '') ?></td>
                             <td>
-                                <a href="fiche_clients.php?id=<?= $animal['id_client'] ?>">
+                                <a href="index.php?page=fiche_animal&id=<?= $animal['id_animal'] ?>">
                                     <?= htmlspecialchars($animal['nom']) ?> <?= htmlspecialchars($animal['prenom']) ?>
                                 </a>
                             </td>
                             <td><?= htmlspecialchars($animal['poids']) ?> kg</td>
                             <td><?= htmlspecialchars($animal['taille']) ?> cm</td>
                             <td>
-                                <a href="fiche_animal.php?id=<?= $animal['id_animal'] ?>" class="btn btn-info btn-sm">Voir</a>
-                                <a href="modifier_animal.php?id=<?= $animal['id_animal'] ?>" class="btn btn-warning btn-sm">Modifier</a>
-                                <a href="supprimer_animal.php?id=<?= $animal['id_animal'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr ?');">Supprimer</a>
+                                <a href="index.php?page=fiche_animal&id=<?= $animal['id_animal'] ?>" class="btn btn-info btn-sm">Voir</a>
+                                <a href="index.php?page=modifier_animal&id=<?= $animal['id_animal'] ?>" class="btn btn-warning btn-sm">Modifier</a>
+                                <a href="index.php?page=supprimer_animal&id=<?= $animal['id_animal'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr ?');">Supprimer</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -100,7 +101,7 @@ $animals = $stmt->fetchAll();
                 <?php endif; ?>
             </tbody>
         </table>
-        <a href="dashboard.php" class="btn btn-secondary">Retour au dashboard</a>
+        <a href="index.php?page=dashboard" class="btn btn-secondary">Retour au dashboard</a>
     </div>
 </body>
 

@@ -1,6 +1,13 @@
 <?php
 include_once('includes/db.php');
-$id = $_GET['id'];
+// Vérification et sécurisation de l'ID
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$id) {
+    $_SESSION['error'] = "ID de client invalide";
+    header('Location: index.php?page=clients');
+    exit;
+}
+
 $client = $pdo->query("SELECT * FROM clients WHERE id_client = $id")->fetch();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -15,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_POST['ville'],
         $id
     ]);
-    header('Location: clients.php');
+    header('Location: index.php?page=clients');
     exit;
 }
 ?>
@@ -31,11 +38,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body>
-<?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
 
     <div class="container mt-5">
         <h2>Modifier le client</h2>
-        <form method="post">
+        <form method="post" action="index.php?page=modifier_client&id=<?= $id ?>">
             <div class="form-group">
                 <label>Nom</label>
                 <input type="text" name="nom" class="form-control" value="<?= htmlspecialchars($client['nom']) ?>" required>
@@ -65,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="text" name="ville" class="form-control" value="<?= htmlspecialchars($client['ville']) ?>">
             </div>
             <button type="submit" class="btn btn-primary">Mettre à jour</button>
-            <a href="clients.php" class="btn btn-secondary">Annuler</a>
+            <a href="index.php?page=clients" class="btn btn-secondary">Annuler</a>
         </form>
     </div>
 </body>

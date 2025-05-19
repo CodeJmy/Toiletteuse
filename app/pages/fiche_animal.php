@@ -60,7 +60,7 @@ foreach ($allRdv as $rdv) {
 </head>
 
 <body>
-    <?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
 
     <div class="container mt-5">
         <h2>Fiche de l'animal : <?= htmlspecialchars($animal['nom_animal']) ?></h2>
@@ -93,7 +93,7 @@ foreach ($allRdv as $rdv) {
             <tr>
                 <th>Propriétaire</th>
                 <td>
-                    <a href="fiche_clients.php?id=<?= $animal['id_client'] ?>">
+                    <a href="index.php?page=fiche_clients&id=<?= $animal['id_client'] ?>">
                         <?= htmlspecialchars($animal['nom_client']) ?> <?= htmlspecialchars($animal['prenom']) ?>
                     </a>
                 </td>
@@ -161,8 +161,8 @@ foreach ($allRdv as $rdv) {
         <?php endif; ?>
 
 
-        <a href="ajouter_rdv.php" class="btn btn-success mb-3">Ajouter un rendez-vous</a>
-        <a href="animal.php" class="btn btn-secondary mb-3">Retour à la liste des animaux</a>
+        <a href="index.php?page=ajouter_rdv" class="btn btn-success mb-3">Ajouter un rendez-vous</a>
+        <a href="index.php?page=animal" class="btn btn-secondary mb-3">Retour à la liste des animaux</a>
     </div>
 </body>
 

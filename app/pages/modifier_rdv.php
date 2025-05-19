@@ -1,6 +1,13 @@
 <?php
 include_once('includes/db.php');
-$id = $_GET['id'];
+// Vérification et sécurisation de l'ID
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$id) {
+    $_SESSION['error'] = "ID de rdv invalide";
+    header('Location: index.php?page=rdv');
+    exit;
+}
+
 $rdv = $pdo->query('SELECT * FROM rdv WHERE id_rdv = '.$id)->fetch();
 $animals = $pdo->query('SELECT * FROM animal')->fetchAll();
 $prestations = $pdo->query('SELECT * FROM prestations')->fetchAll();
@@ -15,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_POST['statut'],
         $id
     ]);
-    header('Location: rdv.php');
+    header('Location: index.php?page=rdv');
     exit;
 }
 ?>
@@ -30,11 +37,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-<?php include('navbar.php'); ?>
+<?php include 'includes/header.php' ?>
 
 <div class="container mt-5">
     <h2>Modifier un rendez-vous</h2>
-    <form method="post">
+    <form method="post" action="index.php?page=modifier_rdv&id=<?= $id ?>">
         <div class="form-group">
             <label>Animaux</label>
             <select name="id_animal" class="form-control" required>
@@ -72,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Modifier</button>
-        <a href="rdv.php" class="btn btn-secondary">Annuler</a>
+        <a href="index.php?page=rdv" class="btn btn-secondary">Annuler</a>
     </form>
 </div>
 </body>

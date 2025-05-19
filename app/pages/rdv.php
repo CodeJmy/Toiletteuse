@@ -68,11 +68,11 @@ $rdvs_today = $stmt_today->fetchAll();
 </head>
 
 <body>
-    <?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
     <div class="d-flex justify-content-center">
-        <a href="rdv.php?filtre=tous" class="btn btn-outline-primary <?= $filtre === 'tous' ? 'active' : '' ?>">Tous</a>
-        <a href="rdv.php?filtre=avenir" class="btn btn-outline-success <?= $filtre === 'avenir' ? 'active' : '' ?>">À venir</a>
-        <a href="rdv.php?filtre=realises" class="btn btn-outline-secondary <?= $filtre === 'realises' ? 'active' : '' ?>">Réalisés</a>
+        <a href="index.php?page=rdv&filtre=tous" class="btn btn-outline-primary <?= $filtre === 'tous' ? 'active' : '' ?>">Tous</a>
+        <a href="index.php?page=rdv&filtre=avenir" class="btn btn-outline-success <?= $filtre === 'avenir' ? 'active' : '' ?>">À venir</a>
+        <a href="index.php?page=rdv&filtre=realises" class="btn btn-outline-secondary <?= $filtre === 'realises' ? 'active' : '' ?>">Réalisés</a>
     </div>
 
     <div class="container mt-5">
@@ -96,7 +96,7 @@ $rdvs_today = $stmt_today->fetchAll();
                     <?php foreach ($rdvs_today as $rdv): ?>
                         <tr>
                             <td>
-                                <a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>">
+                                <a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>">
                                     <?= htmlspecialchars($rdv['nom_animal']) ?>
                                 </a>
                             </td>
@@ -105,9 +105,9 @@ $rdvs_today = $stmt_today->fetchAll();
                             <td><?= htmlspecialchars($rdv['remarque']) ?></td>
                             <td><?= htmlspecialchars($rdv['statut']) ?></td>
                             <td>
-                                <a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-info btn-sm">Voir</a>
-                                <a href="modifier_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning btn-sm">Modifier</a>
-                                <a href="supprimer_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce RDV ?');">Supprimer</a>
+                                <a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>" class="btn btn-info btn-sm">Voir</a>
+                                <a href="index.php?page=modifier_rdv&id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning btn-sm">Modifier</a>
+                                <a href="index.php?page=supprimer_rdv&id=<?= $rdv['id_rdv'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce RDV ?');">Supprimer</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -120,6 +120,7 @@ $rdvs_today = $stmt_today->fetchAll();
 
         <!-- Barre de recherche -->
         <form method="get" class="form-inline mb-4">
+            <input type="hidden" name="page" value="rdv">
             <input type="text" name="search" class="form-control mr-2" placeholder="Rechercher" value="<?= htmlspecialchars($search) ?>">
 
             <select name="sort" class="form-control mr-2">
@@ -129,9 +130,9 @@ $rdvs_today = $stmt_today->fetchAll();
             </select>
 
             <button type="submit" class="btn btn-primary">Rechercher / Trier</button>
-            <a href="rdv.php" class="btn btn-secondary ml-2">Réinitialiser</a>
+            <a href="index.php?page=rdv" class="btn btn-secondary ml-2">Réinitialiser</a>
         </form>
-        <a href="ajouter_rdv.php" class="btn btn-success mb-3">Ajouter un rendez-vous</a>
+        <a href="index.php?page=ajouter_rdv" class="btn btn-success mb-3">Ajouter un rendez-vous</a>
 
         <?php if ($filtre === 'tous' || $filtre === 'avenir'): ?>
             <h3 class="mt-4 text-success">📅 Rendez-vous à venir</h3>
@@ -166,15 +167,15 @@ $rdvs_today = $stmt_today->fetchAll();
                     <tbody>
                         <?php foreach ($rdvs_avenir as $rdv): ?>
                             <tr>
-                                <td><a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>"><?= htmlspecialchars($rdv['nom_animal']) ?></a></td>
+                                <td><a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>"><?= htmlspecialchars($rdv['nom_animal']) ?></a></td>
                                 <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
                                 <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($rdv['date_heure']))) ?></td>
                                 <td><?= htmlspecialchars($rdv['remarque']) ?></td>
                                 <td><?= htmlspecialchars($rdv['statut']) ?></td>
                                 <td>
-                                    <a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-info btn-sm">Voir</a>
-                                    <a href="modifier_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning btn-sm">Modifier</a>
-                                    <a href="supprimer_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce RDV ?');">Supprimer</a>
+                                    <a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>" class="btn btn-info btn-sm">Voir</a>
+                                    <a href="index.php?page=modifier_rdv&id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning btn-sm">Modifier</a>
+                                    <a href="index.php?page=supprimer_rdv&id=<?= $rdv['id_rdv'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce RDV ?');">Supprimer</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -203,15 +204,15 @@ $rdvs_today = $stmt_today->fetchAll();
                     <tbody>
                         <?php foreach ($rdvs_realises as $rdv): ?>
                             <tr class="text-muted">
-                                <td><a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>"><?= htmlspecialchars($rdv['nom_animal']) ?></a></td>
+                                <td><a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>"><?= htmlspecialchars($rdv['nom_animal']) ?></a></td>
                                 <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
                                 <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($rdv['date_heure']))) ?></td>
                                 <td><?= htmlspecialchars($rdv['remarque']) ?></td>
                                 <td><?= htmlspecialchars($rdv['statut']) ?></td>
                                 <td>
-                                    <a href="fiche_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-info btn-sm">Voir</a>
-                                    <a href="modifier_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning btn-sm">Modifier</a>
-                                    <a href="supprimer_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce RDV ?');">Supprimer</a>
+                                    <a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>" class="btn btn-info btn-sm">Voir</a>
+                                    <a href="index.php?page=modifier_rdv&id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning btn-sm">Modifier</a>
+                                    <a href="index.php?page=supprimer_rdv&id=<?= $rdv['id_rdv'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce RDV ?');">Supprimer</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -222,7 +223,7 @@ $rdvs_today = $stmt_today->fetchAll();
             <?php endif; ?>
         <?php endif; ?>
 
-        <a href="dashboard.php" class="btn btn-secondary">Retour au Dashboard</a>
+        <a href="index.php?page=dashboard" class="btn btn-secondary">Retour au Dashboard</a>
     </div>
 </body>
 

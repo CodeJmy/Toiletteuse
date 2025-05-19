@@ -1,10 +1,11 @@
 <?php
-session_start();
 include_once('includes/db.php');
 
+// Vérification et sécurisation de l'ID
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) {
-    header('Location: prestations.php');
+    $_SESSION['error'] = "ID de prestation invalide";
+    header('Location: index.php?page=prestations');
     exit;
 }
 
@@ -13,7 +14,7 @@ $prestation = $pdo->query("SELECT * FROM prestations WHERE id_prestation = $id")
 
 if (!$prestation) {
     $_SESSION['erreur'] = "Prestation introuvable";
-    header('Location: prestations.php');
+    header('Location: index.php?page=prestations');
     exit;
 }
 
@@ -27,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $pdo->prepare("UPDATE prestations SET nom = ?, tarif = ? WHERE id_prestation = ?");
         $stmt->execute([$nom, $tarif, $id]);
         $_SESSION['message'] = "Prestation modifiée avec succès";
-        header('Location: prestations.php');
+        header('Location: index.php?page=prestations');
         exit;
     }
 }
@@ -43,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-<?php include('navbar.php'); ?>
+<?php include 'includes/header.php' ?>
 
 <div class="container mt-5">
     <h2>Modifier la prestation</h2>
@@ -53,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php unset($_SESSION['erreur']); ?>
     <?php endif; ?>
     
-    <form method="post">
+    <form method="post" action="index.php?page=modifier_prestation&id=<?= $id ?>">
         <div class="form-group">
             <label>Nom de la prestation</label>
             <input type="text" name="nom" class="form-control" value="<?= htmlspecialchars($prestation['nom']) ?>" required>

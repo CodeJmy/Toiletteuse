@@ -71,12 +71,13 @@ $paiements = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
 
-    <?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
 
     <div class="container mt-5">
 
         <!-- Barre de recherche -->
-        <form method="get" class="form-inline mb-4">
+        <form method="get" action="index.php" class="form-inline mb-4">
+            <input type="hidden" name="page" value="paiements">
             <input type="text" name="search" class="form-control mr-2" placeholder="Rechercher un animal, client ou prestation" value="<?= htmlspecialchars($search) ?>">
 
             <select name="sort" class="form-control mr-2">
@@ -87,11 +88,11 @@ $paiements = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </select>
 
             <button type="submit" class="btn btn-primary">Filtrer</button>
-            <a href="paiements.php" class="btn btn-secondary ml-2">Réinitialiser</a>
+            <a href="index.php?page=paiements" class="btn btn-secondary ml-2">Réinitialiser</a>
         </form>
 
         <h2>Liste des paiements</h2>
-        <a href="ajouter_paiement.php" class="btn btn-success mb-3">Ajouter un paiement</a>
+        <a href="index.php?page=ajouter_paiement" class="btn btn-success mb-3">Ajouter un paiement</a>
 
         <table class="table table-bordered">
             <thead>
@@ -127,14 +128,14 @@ $paiements = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <!-- Affichage du statut du paiement -->
                         <td><?= htmlspecialchars($paiement['statut']) ?></td>
                         <td>
-                            <a href="modifier_paiement.php?id=<?= $paiement['id_paiement'] ?>" class="btn btn-warning btn-sm">Modifier</a>
-                            <a href="supprimer_paiement.php?id=<?= $paiement['id_paiement'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce paiement ?');">Supprimer</a>
+                            <a href="index.php?page=modifier_paiement&id=<?= $paiement['id_paiement'] ?>" class="btn btn-warning btn-sm">Modifier</a>
+                            <a href="index.php?page=supprimer_paiement&id=<?= $paiement['id_paiement'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer ce paiement ?');">Supprimer</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <a href="dashboard.php" class="btn btn-secondary">Retour au Dashboard</a>
+        <a href="index.php?page=dashboard" class="btn btn-secondary">Retour au Dashboard</a>
     </div>
 </body>
 

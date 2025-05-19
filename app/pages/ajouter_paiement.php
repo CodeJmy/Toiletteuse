@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $updateRdv = $pdo->prepare('UPDATE rdv SET statut = "réalisé" WHERE id_rdv = ?');
         $updateRdv->execute([$id_rdv]);
 
-        header('Location: paiements.php');
+        header('Location: index.php?page=paiements');
         exit;
     }
 }
@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-    <?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
 
     <div class="container mt-5">
         <h2>Ajouter un paiement</h2>
@@ -93,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             </div>
             <button type="submit" class="btn btn-primary">Ajouter</button>
-            <a href="paiements.php" class="btn btn-secondary">Annuler</a>
+            <a href="index.php?page=paiements" class="btn btn-secondary">Annuler</a>
         </form>
     </div>
     <script>

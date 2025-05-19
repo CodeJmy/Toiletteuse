@@ -48,7 +48,7 @@ if ($id_rdv) {
 </head>
 
 <body>
-    <?php include('navbar.php'); ?>
+    <?php include 'includes/header.php' ?>
 
     <div class="container mt-5">
         <h2>Détail du rendez-vous</h2>
@@ -62,9 +62,9 @@ if ($id_rdv) {
             <li class="list-group-item"><strong>Remarque :</strong> <?= nl2br(htmlspecialchars($rdv['remarque'])) ?></li>
         </ul>
 
-        <a href="ajouter_paiement.php?id_rdv=<?= $rdv['id_rdv'] ?>" class="btn btn-success">Ajouter un paiement</a>
-        <a href="modifier_rdv.php?id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning">Modifier le RDV</a>
-        <a href="rdv.php" class="btn btn-secondary">Retour à la liste</a>
+        <a href="index.php?page=ajouter_paiement&id_rdv=<?= $rdv['id_rdv'] ?>" class="btn btn-success">Ajouter un paiement</a>
+        <a href="index.php?page=modifier_rdv&id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning">Modifier le RDV</a>
+        <a href="index.php?page=rdv" class="btn btn-secondary">Retour à la liste</a>
     </div>
 
     <?php if (!empty($paiements)): ?>

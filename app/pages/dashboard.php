@@ -1,12 +1,12 @@
 <?php
-session_start();
-if (!isset($_SESSION['utilisateur_id'])) {
-    header('Location: login.php');
-    exit;
-}
-
+// session_start();
+// if (!isset($_SESSION['utilisateur_id'])) {
+//     header('Location: login.php');
+//     exit;
+// }
 // Connexion à la base
 include_once('includes/db.php');
+include_once 'includes/auth.php';
 
 // Comptages
 $nb_clients = $pdo->query('SELECT COUNT(*) FROM clients')->fetchColumn();
@@ -50,8 +50,8 @@ while ($row = $requete->fetch()) {
 </head>
 
 <body>
-    <?php include('navbar.php'); ?>
-
+    <?php include 'includes/header.php' ?>
+    
     <div class="container-fluid">
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -69,7 +69,7 @@ while ($row = $requete->fetch()) {
         <div class="row mt-4">
 
             <div class="col-md-3">
-                <a href="clients.php" style="text-decoration: none;">
+                <a href="index.php?page=clients" style="text-decoration: none;">
                     <div class="card text-white bg-primary mb-3">
                         <div class="card-header">Clients</div>
                         <div class="card-body">
@@ -81,7 +81,7 @@ while ($row = $requete->fetch()) {
             </div>
 
             <div class="col-md-3">
-                <a href="animal.php" style="text-decoration: none;">
+                <a href="index.php?page=animal" style="text-decoration: none;">
                     <div class="card text-white bg-success mb-3">
                         <div class="card-header">Animaux</div>
                         <div class="card-body">
@@ -93,7 +93,7 @@ while ($row = $requete->fetch()) {
             </div>
 
             <div class="col-md-3">
-                <a href="rdv.php" style="text-decoration: none;">
+                <a href="index.php?page=rdv" style="text-decoration: none;">
                     <div class="card text-white bg-warning mb-3">
                         <div class="card-header">RDV Aujourd'hui</div>
                         <div class="card-body">
@@ -105,7 +105,7 @@ while ($row = $requete->fetch()) {
             </div>
 
             <div class="col-md-3">
-                <a href="paiements.php" style="text-decoration: none;">
+                <a href="index.php?page=paiements" style="text-decoration: none;">
                     <div class="card text-white bg-info mb-3">
                         <div class="card-header">Paiements</div>
                         <div class="card-body">

@@ -1,5 +1,4 @@
 <?php
-session_start();
 include_once('includes/db.php');
 
 // Gestion de la suppression
@@ -30,7 +29,7 @@ $prestations = $pdo->query("SELECT * FROM prestations ORDER BY nom")->fetchAll()
 
 <body>
 
-    <?php include('navbar.php'); ?>
+<?php include 'includes/header.php' ?>
 
     <div class="container mt-5">
         <h2>Gestion des Prestations</h2>
@@ -40,7 +39,7 @@ $prestations = $pdo->query("SELECT * FROM prestations ORDER BY nom")->fetchAll()
             <?php unset($_SESSION['message']); ?>
         <?php endif; ?>
 
-        <a href="ajouter_prestation.php" class="btn btn-success mb-3">Ajouter une prestation</a>
+        <a href="index.php?page=ajouter_prestation" class="btn btn-success mb-3">Ajouter une prestation</a>
 
         <table class="table table-bordered">
             <thead>
@@ -56,8 +55,8 @@ $prestations = $pdo->query("SELECT * FROM prestations ORDER BY nom")->fetchAll()
                         <td><?= htmlspecialchars($prestation['nom']) ?></td>
                         <td><?= number_format($prestation['tarif'], 2, ',', ' ') ?></td>
                         <td>
-                            <a href="modifier_prestation.php?id=<?= $prestation['id_prestation'] ?>" class="btn btn-warning btn-sm">Modifier</a>
-                            <a href="prestations.php?supprimer=<?= $prestation['id_prestation'] ?>"
+                            <a href="index.php?page=modifier_prestation&id=<?= $prestation['id_prestation'] ?>" class="btn btn-warning btn-sm">Modifier</a>
+                            <a href="index.php?page=supprimer_prestations&id=<?= $prestation['id_prestation'] ?>"
                                 class="btn btn-danger btn-sm"
                                 onclick="return confirm('Supprimer cette prestation ?')">Supprimer</a>
                         </td>
@@ -65,7 +64,7 @@ $prestations = $pdo->query("SELECT * FROM prestations ORDER BY nom")->fetchAll()
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <a href="dashboard.php" class="btn btn-secondary">Retour au Dashboard</a>
+        <a href="index.php?page=dashboard" class="btn btn-secondary">Retour au Dashboard</a>
     </div>
 </body>
 
