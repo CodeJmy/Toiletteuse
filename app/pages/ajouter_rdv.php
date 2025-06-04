@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Ajouter</button>
-            <a href="rdv.php" class="btn btn-secondary">Annuler</a>
+            <a href="index.php?page=rdv" class="btn btn-secondary">Annuler</a>
         </form>
     </div>
 </body>

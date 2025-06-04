@@ -18,12 +18,12 @@ $total = $pdo->query("SELECT SUM(montant) FROM paiements WHERE statut = 'payé'"
 // Récupérer les 6 derniers mois de paiements
 $requete = $pdo->query("
     SELECT 
-        DATE_FORMAT(date_paiement, '%b') AS mois,
+        DATE_FORMAT(date_paiement, '%b %Y') AS mois,
         SUM(montant) AS total
     FROM paiements
     WHERE statut = 'payé'
       AND date_paiement >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
-    GROUP BY MONTH(date_paiement)
+    GROUP BY YEAR(date_paiement), MONTH(date_paiement)
     ORDER BY date_paiement ASC
 ");
 
@@ -51,7 +51,7 @@ while ($row = $requete->fetch()) {
 
 <body>
     <?php include 'includes/header.php' ?>
-    
+
     <div class="container-fluid">
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -134,12 +134,14 @@ while ($row = $requete->fetch()) {
                     <tbody>
                         <?php
                         $rdvs = $pdo->query("SELECT animal.nom_animal, prestations.nom AS prestation, rdv.date_heure, rdv.statut
-                                     FROM rdv 
-                                     JOIN animal ON rdv.id_animal = animal.id_animal
-                                     JOIN prestations ON rdv.id_prestation = prestations.id_prestation
-                                     WHERE DATE(rdv.date_heure) >= CURDATE()
-                                     ORDER BY rdv.date_heure ASC
-                                     LIMIT 5");
+                                    FROM rdv 
+                                    JOIN animal ON rdv.id_animal = animal.id_animal
+                                    JOIN prestations ON rdv.id_prestation = prestations.id_prestation
+                                    WHERE DATE(rdv.date_heure) >= CURDATE()
+                                    AND rdv.statut = 'prévu'
+                                    ORDER BY rdv.date_heure ASC
+                                    LIMIT 5");
+
                         foreach ($rdvs as $rdv) {
                             echo "<tr>
                             <td>{$rdv['nom_animal']}</td>

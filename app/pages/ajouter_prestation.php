@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="number" step="0.01" name="tarif" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary">Ajouter</button>
-            <a href="prestations.php" class="btn btn-secondary">Annuler</a>
+            <a href="index.php?page=prestations" class="btn btn-secondary">Annuler</a>
         </form>
     </div>
 </body>

@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <textarea name="remarques" class="form-control"></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Ajouter</button>
-            <a href="animal.php" class="btn btn-secondary">Annuler</a>
+            <a href="index.php?page=animal" class="btn btn-secondary">Annuler</a>
         </form>
     </div>
 </body>

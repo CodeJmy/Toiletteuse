@@ -32,7 +32,7 @@ $now = date('Y-m-d H:i:s');
 foreach ($rdvs as $rdv) {
     if (strtolower($rdv['statut']) === 'réalisé') {
         $rdvs_realises[] = $rdv;
-    } elseif ($rdv['date_heure'] >= $now) {
+    } elseif ($rdv['date_heure'] >= $now && date('Y-m-d', strtotime($rdv['date_heure'])) !== date('Y-m-d')) {
         $rdvs_avenir[] = $rdv;
     } else {
         // Statut pas "réalisé" et date passée => à mettre à jour
@@ -41,7 +41,7 @@ foreach ($rdvs as $rdv) {
 }
 
 
-$filtre = $_GET['filtre'] ?? 'tous';
+$filtre = $_GET['filtre'] ?? 'avenir';
 
 // Récupérer les rendez-vous du jour
 $sql_today = "
@@ -50,8 +50,10 @@ $sql_today = "
     LEFT JOIN animal ON rdv.id_animal = animal.id_animal
     JOIN prestations ON rdv.id_prestation = prestations.id_prestation
     WHERE DATE(rdv.date_heure) = CURDATE()
+    AND rdv.statut = 'Prévu'
     ORDER BY rdv.date_heure ASC
 ";
+
 
 $stmt_today = $pdo->query($sql_today);
 $rdvs_today = $stmt_today->fetchAll();
@@ -74,7 +76,6 @@ $rdvs_today = $stmt_today->fetchAll();
 <body>
     <?php include 'includes/header.php' ?>
     <div class="d-flex justify-content-center">
-        <a href="index.php?page=rdv&filtre=tous" class="btn btn-outline-primary <?= $filtre === 'tous' ? 'active' : '' ?>">Tous</a>
         <a href="index.php?page=rdv&filtre=avenir" class="btn btn-outline-success <?= $filtre === 'avenir' ? 'active' : '' ?>">À venir</a>
         <a href="index.php?page=rdv&filtre=realises" class="btn btn-outline-secondary <?= $filtre === 'realises' ? 'active' : '' ?>">Réalisés</a>
     </div>
@@ -138,7 +139,7 @@ $rdvs_today = $stmt_today->fetchAll();
         </form>
         <a href="index.php?page=ajouter_rdv" class="btn btn-success mb-3">Ajouter un rendez-vous</a>
 
-        <?php if ($filtre === 'tous' || $filtre === 'avenir'): ?>
+        <?php if ($filtre === 'avenir'): ?>
             <h3 class="mt-4 text-success">📅 Rendez-vous à venir</h3>
             <?php
             function afficherStatutStylise($statut)
@@ -223,7 +224,7 @@ $rdvs_today = $stmt_today->fetchAll();
 
 
 
-        <?php if ($filtre === 'tous' || $filtre === 'realises'): ?>
+        <?php if ($filtre === 'realises'): ?>
             <h3 class="mt-5 text-secondary">✅ Rendez-vous réalisés</h3>
             <?php if (count($rdvs_realises) > 0): ?>
                 <table class="table table-bordered">
