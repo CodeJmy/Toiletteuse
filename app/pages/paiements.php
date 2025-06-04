@@ -37,13 +37,12 @@ $query = "
         rdv r ON p.id_rdv = r.id_rdv
     JOIN 
         animal ch ON r.id_animal = ch.id_animal
-    JOIN 
+    LEFT JOIN 
         clients c ON ch.id_client = c.id_client
     JOIN 
         prestations pr ON r.id_prestation = pr.id_prestation
     WHERE 
-        (r.statut = 'réalisé' OR r.statut = 'prévu')
-        AND (
+        (
             c.nom LIKE :search 
             OR c.prenom LIKE :search 
             OR ch.nom_animal LIKE :search 
@@ -52,6 +51,7 @@ $query = "
     ORDER BY 
         $orderBy
 ";
+
 
 
 $stmt = $pdo->prepare($query);
@@ -112,7 +112,7 @@ $paiements = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php foreach ($paiements as $paiement): ?>
                     <tr>
                         <!-- Affichage client -->
-                        <td><?= htmlspecialchars($paiement['nom_client']) ?> <?= htmlspecialchars($paiement['prenom_client']) ?></td>
+                        <td><?= htmlspecialchars($paiement['nom_client'] ?? 'N/A') ?> <?= htmlspecialchars($paiement['prenom_client'] ?? '') ?></td>
                         <!-- Affichage nom_animal -->
                         <td><?= htmlspecialchars($paiement['nom_animal']) ?></td>
                         <!-- Affichage de la prestation prestation AS nom_prestation -->

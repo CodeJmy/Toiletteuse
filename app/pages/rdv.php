@@ -12,9 +12,9 @@ if (!in_array($sort, $allowedSort)) {
 $sql = "
     SELECT rdv.*, animal.nom_animal, prestations.nom AS nom_prestation
     FROM rdv
-    JOIN animal ON rdv.id_animal = animal.id_animal
+    LEFT JOIN animal ON rdv.id_animal = animal.id_animal
     JOIN prestations ON rdv.id_prestation = prestations.id_prestation
-    WHERE animal.nom_animal LIKE :search OR prestations.nom LIKE :search
+    WHERE (animal.nom_animal LIKE :search OR prestations.nom LIKE :search OR :search = '%%')
     ORDER BY $sort ASC
 ";
 
@@ -24,6 +24,7 @@ $stmt->execute([
 ]);
 $rdvs = $stmt->fetchAll();
 
+$rdvs_a_mettre_a_jour = [];
 $rdvs_avenir = [];
 $rdvs_realises = [];
 $now = date('Y-m-d H:i:s');
@@ -34,19 +35,19 @@ foreach ($rdvs as $rdv) {
     } elseif ($rdv['date_heure'] >= $now) {
         $rdvs_avenir[] = $rdv;
     } else {
-        $rdvs_realises[] = $rdv;
+        // Statut pas "réalisé" et date passée => à mettre à jour
+        $rdvs_a_mettre_a_jour[] = $rdv;
     }
 }
 
+
 $filtre = $_GET['filtre'] ?? 'tous';
-
-
 
 // Récupérer les rendez-vous du jour
 $sql_today = "
     SELECT rdv.*, animal.nom_animal, prestations.nom AS nom_prestation
     FROM rdv
-    JOIN animal ON rdv.id_animal = animal.id_animal
+    LEFT JOIN animal ON rdv.id_animal = animal.id_animal
     JOIN prestations ON rdv.id_prestation = prestations.id_prestation
     WHERE DATE(rdv.date_heure) = CURDATE()
     ORDER BY rdv.date_heure ASC
@@ -54,6 +55,9 @@ $sql_today = "
 
 $stmt_today = $pdo->query($sql_today);
 $rdvs_today = $stmt_today->fetchAll();
+
+
+
 
 ?>
 
@@ -97,7 +101,7 @@ $rdvs_today = $stmt_today->fetchAll();
                         <tr>
                             <td>
                                 <a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>">
-                                    <?= htmlspecialchars($rdv['nom_animal']) ?>
+                                    <?= $rdv['nom_animal'] !== null ? htmlspecialchars($rdv['nom_animal']) : 'N/A' ?>
                                 </a>
                             </td>
                             <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
@@ -167,7 +171,7 @@ $rdvs_today = $stmt_today->fetchAll();
                     <tbody>
                         <?php foreach ($rdvs_avenir as $rdv): ?>
                             <tr>
-                                <td><a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>"><?= htmlspecialchars($rdv['nom_animal']) ?></a></td>
+                                <td><a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>"><?= $rdv['nom_animal'] !== null ? htmlspecialchars($rdv['nom_animal']) : 'N/A' ?></a></td>
                                 <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
                                 <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($rdv['date_heure']))) ?></td>
                                 <td><?= htmlspecialchars($rdv['remarque']) ?></td>
@@ -185,6 +189,38 @@ $rdvs_today = $stmt_today->fetchAll();
                 <p class="text-muted">Aucun rendez-vous à venir.</p>
             <?php endif; ?>
         <?php endif; ?>
+
+        <?php if (count($rdvs_a_mettre_a_jour) > 0): ?>
+            <h3 class="mt-5 text-danger">⚠️ Rendez-vous à mettre à jour</h3>
+            <p class="text-muted">Ces rendez-vous sont passés mais n'ont pas encore été marqués comme <strong>Réalisés</strong>.</p>
+            <table class="table table-bordered table-warning">
+                <thead>
+                    <tr>
+                        <th>Animal</th>
+                        <th>Prestation</th>
+                        <th>Date & Heure</th>
+                        <th>Remarque</th>
+                        <th>Statut actuel</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($rdvs_a_mettre_a_jour as $rdv): ?>
+                        <tr>
+                            <td><?= $rdv['nom_animal'] !== null ? htmlspecialchars($rdv['nom_animal']) : 'N/A' ?></td>
+                            <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
+                            <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($rdv['date_heure']))) ?></td>
+                            <td><?= htmlspecialchars($rdv['remarque']) ?></td>
+                            <td><strong><?= htmlspecialchars($rdv['statut']) ?></strong></td>
+                            <td>
+                                <a href="index.php?page=modifier_rdv&id=<?= $rdv['id_rdv'] ?>" class="btn btn-warning btn-sm">Mettre à jour</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+
 
 
         <?php if ($filtre === 'tous' || $filtre === 'realises'): ?>
@@ -204,7 +240,7 @@ $rdvs_today = $stmt_today->fetchAll();
                     <tbody>
                         <?php foreach ($rdvs_realises as $rdv): ?>
                             <tr class="text-muted">
-                                <td><a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>"><?= htmlspecialchars($rdv['nom_animal']) ?></a></td>
+                                <td><a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>"><?= $rdv['nom_animal'] !== null ? htmlspecialchars($rdv['nom_animal']) : 'N/A' ?></a></td>
                                 <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
                                 <td><?= htmlspecialchars(date('d/m/Y H:i', strtotime($rdv['date_heure']))) ?></td>
                                 <td><?= htmlspecialchars($rdv['remarque']) ?></td>

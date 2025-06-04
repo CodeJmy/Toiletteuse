@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="form-group">
                 <label>Date de paiement</label>
-                <input type="date" name="date_paiement" class="form-control" required>
+                <input type="date" name="date_paiement" class="form-control" value="<?= date('Y-m-d') ?>" required>
             </div>
             <div class="form-group">
                 <label>Statut</label>

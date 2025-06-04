@@ -161,7 +161,7 @@ foreach ($allRdv as $rdv) {
         <?php endif; ?>
 
 
-        <a href="index.php?page=ajouter_rdv" class="btn btn-success mb-3">Ajouter un rendez-vous</a>
+        <a href="index.php?page=ajouter_rdv&id_animal=<?= $animal['id_animal'] ?>" class="btn btn-success mb-3">Ajouter un rendez-vous</a>
         <a href="index.php?page=animal" class="btn btn-secondary mb-3">Retour à la liste des animaux</a>
     </div>
 </body>

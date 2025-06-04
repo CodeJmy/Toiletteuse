@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-group">
                 <label>Date et heure</label>
-                <input type="datetime-local" name="date_heure" class="form-control" value="<?= date('d-m-Y\TH:i', strtotime($rdv['date_heure'])) ?>" required>
+                <input type="datetime-local" name="date_heure" class="form-control" value="<?= date('Y-m-d\TH:i', strtotime($rdv['date_heure'])) ?>" required>
             </div>
             <div class="form-group">
                 <label>Remarque</label>
