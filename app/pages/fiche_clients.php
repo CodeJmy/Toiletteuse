@@ -28,7 +28,7 @@ $animals = $stmtAnimal->fetchAll();
 
 // Récupérer les rendez-vous du client via ses animaux
 $sqlRdv = "
-    SELECT rdv.*, animal.nom_animal, prestations.nom AS nom_prestation 
+    SELECT rdv.id_rdv, rdv.*, animal.nom_animal, prestations.nom AS nom_prestation 
     FROM rdv 
     JOIN animal ON rdv.id_animal = animal.id_animal 
     JOIN prestations ON rdv.id_prestation = prestations.id_prestation 
@@ -90,8 +90,12 @@ $rdvs = $stmtRdv->fetchAll();
                 <tbody>
                     <?php foreach ($rdvs as $rdv): ?>
                         <tr>
-                            <td><a href="index.php?page=fiche_animal&id=<?= $rdv['id_animal'] ?>">
+                            <td>
+                                <a href="index.php?page=fiche_rdv&id=<?= $rdv['id_rdv'] ?>" class="mr-2">
                                     <?= htmlspecialchars($rdv['nom_animal'] ?? '') ?>
+                                </a>
+                                <a href="index.php?page=fiche_animal&id=<?= $rdv['id_animal'] ?>" class="text-muted">
+                                    <small>(Voir fiche animal)</small>
                                 </a>
                             </td>
                             <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
