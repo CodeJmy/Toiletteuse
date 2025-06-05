@@ -13,7 +13,7 @@ if (!$id_animal) {
 $stmt = $pdo->prepare("
     SELECT animal.*, clients.nom AS nom_client, clients.prenom 
     FROM animal 
-    JOIN clients ON animal.id_client = clients.id_client 
+    LEFT JOIN clients ON animal.id_client = clients.id_client 
     WHERE id_animal = ?
 ");
 $stmt->execute([$id_animal]);
@@ -93,9 +93,13 @@ foreach ($allRdv as $rdv) {
             <tr>
                 <th>Propriétaire</th>
                 <td>
-                    <a href="index.php?page=fiche_clients&id=<?= $animal['id_client'] ?>">
-                        <?= htmlspecialchars($animal['nom_client']) ?> <?= htmlspecialchars($animal['prenom']) ?>
-                    </a>
+                    <?php if (!empty($animal['id_client']) && !empty($animal['nom_client'])): ?>
+                        <a href="index.php?page=fiche_clients&id=<?= $animal['id_client'] ?>">
+                            <?= htmlspecialchars($animal['nom_client']) ?> <?= htmlspecialchars($animal['prenom']) ?>
+                        </a>
+                    <?php else: ?>
+                        Aucun propriétaire
+                    <?php endif; ?>
                 </td>
             </tr>
         </table>
