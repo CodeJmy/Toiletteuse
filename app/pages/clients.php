@@ -85,6 +85,7 @@ $clients = $stmt->fetchAll();
                             <td><?= htmlspecialchars($client['telephone']) ?></td>
                             <td><?= htmlspecialchars($client['email']) ?></td>
                             <td>
+                                <a href="index.php?page=fiche_clients&id=<?= $client['id_client'] ?>" class="btn btn-info btn-sm">Voir</a>
                                 <a href="index.php?page=modifier_client&id=<?= $client['id_client'] ?>" class="btn btn-warning btn-sm">Modifier</a>
                                 <a href="index.php?page=supprimer_client&id=<?= $client['id_client'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?');">Supprimer</a>
                             </td>
