@@ -64,7 +64,11 @@ $rdvs = $stmtRdv->fetchAll();
         <?php if (count($animals) > 0): ?>
             <ul>
                 <?php foreach ($animals as $animal): ?>
-                    <li><?= htmlspecialchars($animal['nom_animal']) ?> (<?= htmlspecialchars($animal['race']) ?>)</li>
+                    <li><a href="index.php?page=fiche_animal&id=<?= $animal['id_animal'] ?>">
+                            <?= htmlspecialchars($animal['nom_animal'] ?? '') ?>
+                        </a>
+                        (<?= htmlspecialchars($animal['race']) ?>)
+                    </li>
                 <?php endforeach; ?>
             </ul>
         <?php else: ?>
