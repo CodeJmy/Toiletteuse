@@ -50,6 +50,7 @@ $rdvs = $stmtRdv->fetchAll();
 </head>
 
 <body>
+    <?php include 'includes/header.php' ?>
 
     <div class="container mt-5">
         <h2>Fiche du client : <?= htmlspecialchars($client['prenom']) . ' ' . htmlspecialchars($client['nom']) ?></h2>
