@@ -115,7 +115,6 @@ $animals = $stmt->fetchAll();
                             <td>
                                 <a href="index.php?page=fiche_animal&id=<?= $animal['id_animal'] ?>" class="btn btn-info btn-sm">Voir</a>
                                 <a href="index.php?page=modifier_animal&id=<?= $animal['id_animal'] ?>" class="btn btn-warning btn-sm">Modifier</a>
-                                <!-- Bouton Supprimer supprimé -->
                             </td>
                         </tr>
                     <?php endforeach; ?>

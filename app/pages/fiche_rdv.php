@@ -14,7 +14,7 @@ $sql = "
     JOIN prestations ON rdv.id_prestation = prestations.id_prestation
     WHERE id_rdv = :id
 ";
-// On suppose que tu as déjà récupéré $id_rdv dans l'URL
+
 $id_rdv = $_GET['id'] ?? null;
 
 if ($id_rdv) {
