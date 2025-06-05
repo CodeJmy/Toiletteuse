@@ -39,12 +39,14 @@ $animals = $stmt->fetchAll();
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animaux</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
     <?php include 'includes/header.php' ?>
 
@@ -100,12 +102,12 @@ $animals = $stmt->fetchAll();
                             <td><?= htmlspecialchars($animal['race'] ?? '') ?></td>
                             <td><?= htmlspecialchars($animal['date_de_naissance'] ?? '') ?></td>
                             <td>
-                                <?php if ($animal['nom']): ?>
-                                    <a href="index.php?page=fiche_animal&id=<?= $animal['id_animal'] ?>">
+                                <?php if ($animal['nom'] && $animal['id_client']): ?>
+                                    <a href="index.php?page=fiche_clients&id=<?= $animal['id_client'] ?>">
                                         <?= htmlspecialchars($animal['nom'] ?? '') ?> <?= htmlspecialchars($animal['prenom'] ?? '') ?>
                                     </a>
                                 <?php else: ?>
-                                    <em>Propriétaire supprimé</em>
+                                    <em>Aucun propriétaire</em>
                                 <?php endif; ?>
                             </td>
                             <td><?= htmlspecialchars($animal['poids'] ?? '') ?> kg</td>
@@ -128,4 +130,5 @@ $animals = $stmt->fetchAll();
         <a href="index.php?page=dashboard" class="btn btn-secondary">Retour au dashboard</a>
     </div>
 </body>
+
 </html>
