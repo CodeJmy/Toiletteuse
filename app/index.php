@@ -16,7 +16,7 @@ $pages_privees = [
     'fiche_clients',
     'fiche_animal',
     'fiche_rdv',
-    // ajoute ici tes pages privées
+    // pages privées
     'ajouter_prestation',
     'ajouter_rdv',
     'ajouter_animal',

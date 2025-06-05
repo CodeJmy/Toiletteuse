@@ -8,4 +8,3 @@ $pdo->prepare("DELETE FROM clients WHERE id_client = ?")->execute([$id]);
 
 header('Location: index.php?page=clients');
 exit;
-?>
