@@ -90,7 +90,10 @@ $rdvs = $stmtRdv->fetchAll();
                 <tbody>
                     <?php foreach ($rdvs as $rdv): ?>
                         <tr>
-                            <td><?= htmlspecialchars($rdv['nom_animal']) ?></td>
+                            <td><a href="index.php?page=fiche_animal&id=<?= $rdv['id_animal'] ?>">
+                                    <?= htmlspecialchars($rdv['nom_animal'] ?? '') ?>
+                                </a>
+                            </td>
                             <td><?= htmlspecialchars($rdv['nom_prestation']) ?></td>
                             <td><?= date('d/m/Y H:i', strtotime($rdv['date_heure'])) ?></td>
                             <td><?= htmlspecialchars($rdv['statut']) ?></td>
