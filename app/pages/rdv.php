@@ -1,12 +1,12 @@
 <?php
 include_once('includes/db.php');
 $search = $_GET['search'] ?? '';
-$sort = $_GET['sort'] ?? 'date_heure';
+$tri = $_GET['tri'] ?? 'date_heure';
 
-$allowedSort = ['date_heure', 'nom_animal', 'nom_prestation'];
+$triOk = ['date_heure', 'nom_animal', 'nom_prestation'];
 
-if (!in_array($sort, $allowedSort)) {
-    $sort = 'date_heure';
+if (!in_array($tri, $triOk)) {
+    $tri = 'date_heure';
 }
 
 $sql = "
@@ -15,7 +15,7 @@ $sql = "
     LEFT JOIN animal ON rdv.id_animal = animal.id_animal
     JOIN prestations ON rdv.id_prestation = prestations.id_prestation
     WHERE (animal.nom_animal LIKE :search OR prestations.nom LIKE :search OR :search = '%%')
-    ORDER BY $sort ASC
+    ORDER BY $tri ASC
 ";
 
 $stmt = $pdo->prepare($sql);
@@ -54,13 +54,8 @@ $sql_today = "
     ORDER BY rdv.date_heure ASC
 ";
 
-
 $stmt_today = $pdo->query($sql_today);
 $rdvs_today = $stmt_today->fetchAll();
-
-
-
-
 ?>
 
 <!DOCTYPE html>
@@ -128,10 +123,10 @@ $rdvs_today = $stmt_today->fetchAll();
             <input type="hidden" name="page" value="rdv">
             <input type="text" name="search" class="form-control mr-2" placeholder="Rechercher" value="<?= htmlspecialchars($search) ?>">
 
-            <select name="sort" class="form-control mr-2">
-                <option value="date_heure" <?= $sort == 'date_heure' ? 'selected' : '' ?>>Date/Heure</option>
-                <option value="nom_animal" <?= $sort == 'nom_animal' ? 'selected' : '' ?>>Nom de l'animal</option>
-                <option value="nom_prestation" <?= $sort == 'nom_prestation' ? 'selected' : '' ?>>Prestation</option>
+            <select name="tri" class="form-control mr-2">
+                <option value="date_heure" <?= $tri == 'date_heure' ? 'selected' : '' ?>>Date/Heure</option>
+                <option value="nom_animal" <?= $tri == 'nom_animal' ? 'selected' : '' ?>>Nom de l'animal</option>
+                <option value="nom_prestation" <?= $tri == 'nom_prestation' ? 'selected' : '' ?>>Prestation</option>
             </select>
 
             <button type="submit" class="btn btn-primary">Rechercher / Trier</button>

@@ -1,13 +1,14 @@
 <?php
 include_once('includes/db.php');
 include_once('includes/auth.php');
-$id_animal_preselectionne = $_GET['id_animal'] ?? null;
+$id_animal_preselect = $_GET['id_animal'] ?? null;
 $animals = $pdo->query('SELECT * FROM animal')->fetchAll();
 $prestations = $pdo->query('SELECT * FROM prestations')->fetchAll();
 $id_client = null;
-if ($id_animal_preselectionne) {
+
+if ($id_animal_preselect) {
     $stmt = $pdo->prepare("SELECT id_client FROM animal WHERE id_animal = ?");
-    $stmt->execute([$id_animal_preselectionne]);
+    $stmt->execute([$id_animal_preselect]);
     $result = $stmt->fetch();
     if ($result) {
         $id_client = $result['id_client'];
@@ -64,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <select name="id_animal" class="form-control" required>
                     <?php foreach ($animals as $animal): ?>
                         <option value="<?= $animal['id_animal'] ?>"
-                            <?= ($id_animal_preselectionne == $animal['id_animal']) ? 'selected' : '' ?>>
+                            <?= ($id_animal_preselect == $animal['id_animal']) ? 'selected' : '' ?>>
                             <?= htmlspecialchars($animal['nom_animal']) ?>
                         </option>
                     <?php endforeach; ?>

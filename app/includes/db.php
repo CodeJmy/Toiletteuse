@@ -1,6 +1,4 @@
 <?php
-// includes/db.php
-
 $host = 'localhost';
 $dbname = 'toiletteuse';
 $username = 'root';

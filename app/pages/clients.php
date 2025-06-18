@@ -3,18 +3,18 @@ include_once('includes/db.php');
 include_once 'includes/auth.php';
 
 $search = $_GET['search'] ?? '';
-$sort = $_GET['sort'] ?? 'date_creation_client';
+$trier = $_GET['trier'] ?? 'date_creation_client';
 
-$allowedSort = ['nom', 'prenom', 'telephone', 'date_creation_client'];
+$trieAuto = ['nom', 'prenom', 'telephone', 'date_creation_client'];
 
-if (!in_array($sort, $allowedSort)) {
-    $sort = 'date_creation_client';
+if (!in_array($trier, $trieAuto)) {
+    $trier = 'date_creation_client';
 }
 
 $sql = "
     SELECT * FROM clients
     WHERE nom LIKE :search OR prenom LIKE :search OR telephone LIKE :search
-    ORDER BY $sort ASC
+    ORDER BY $trier ASC
 ";
 
 $stmt = $pdo->prepare($sql);
@@ -45,11 +45,11 @@ $clients = $stmt->fetchAll();
             <input type="hidden" name="page" value="clients">
             <input type="text" name="search" class="form-control mr-2" placeholder="Rechercher" value="<?= htmlspecialchars($search) ?>">
 
-            <select name="sort" class="form-control mr-2">
-                <option value="date_creation_client" <?= $sort == 'date_creation_client' ? 'selected' : '' ?>>Date de création</option>
-                <option value="nom" <?= $sort == 'nom' ? 'selected' : '' ?>>Nom</option>
-                <option value="prenom" <?= $sort == 'prenom' ? 'selected' : '' ?>>Prénom</option>
-                <option value="telephone" <?= $sort == 'telephone' ? 'selected' : '' ?>>Téléphone</option>
+            <select name="trier" class="form-control mr-2">
+                <option value="date_creation_client" <?= $trier == 'date_creation_client' ? 'selected' : '' ?>>Date de création</option>
+                <option value="nom" <?= $trier == 'nom' ? 'selected' : '' ?>>Nom</option>
+                <option value="prenom" <?= $trier == 'prenom' ? 'selected' : '' ?>>Prénom</option>
+                <option value="telephone" <?= $trier == 'telephone' ? 'selected' : '' ?>>Téléphone</option>
             </select>
 
             <button type="submit" class="btn btn-primary">Rechercher / Trier</button>

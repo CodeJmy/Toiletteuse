@@ -7,12 +7,11 @@ if (!$id) {
 }
 
 // Récupère les infos du RDV
-$sql = "
-    SELECT rdv.*, animal.nom_animal, prestations.nom AS nom_prestation, prestations.tarif
-    FROM rdv
-    JOIN animal ON rdv.id_animal = animal.id_animal
-    JOIN prestations ON rdv.id_prestation = prestations.id_prestation
-    WHERE id_rdv = :id
+$sql = "SELECT rdv.*, animal.nom_animal, prestations.nom AS nom_prestation, prestations.tarif 
+FROM rdv
+JOIN animal ON rdv.id_animal = animal.id_animal
+JOIN prestations ON rdv.id_prestation = prestations.id_prestation
+WHERE id_rdv = :id
 ";
 
 $id_rdv = $_GET['id'] ?? null;

@@ -10,6 +10,7 @@ $allowedSort = ['nom_animal', 'race', 'date_de_naissance'];
 
 if (!in_array($sort, $allowedSort)) {
     $sort = 'nom_animal';
+    
 }
 
 // Construction de la requête SQL
